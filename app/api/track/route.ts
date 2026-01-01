@@ -54,6 +54,8 @@ export async function POST(req: NextRequest) {
       const os = parser.getOS().name || "Other";
       const device = parser.getDevice().type || "desktop";
 
+      const { utmSource, utmMedium, utmCampaign } = body;
+
       const visit = await prisma.visit.create({
         data: {
           websiteId,
@@ -67,6 +69,9 @@ export async function POST(req: NextRequest) {
           browser,
           os,
           device,
+          utmSource,
+          utmMedium,
+          utmCampaign,
           entryTime: new Date(),
         },
       });

@@ -108,6 +108,9 @@ model Visit {
   region      String?
   country     String?
   countryCode String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
   ip          String?
 
   @@index([websiteId])

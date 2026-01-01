@@ -8,6 +8,7 @@
   const trackUrl = serverUrl + '/api/track';
 
   async function track(type) {
+    const params = new URLSearchParams(window.location.search);
     const data = {
       type,
       websiteId,
@@ -15,7 +16,10 @@
       referrer: document.referrer,
       path: window.location.pathname,
       hostname: window.location.hostname,
-      registeredDomain: registeredDomain
+      registeredDomain: registeredDomain,
+      utmSource: params.get('utm_source'),
+      utmMedium: params.get('utm_medium'),
+      utmCampaign: params.get('utm_campaign')
     };
 
     if (type === 'end' && navigator.sendBeacon) {
