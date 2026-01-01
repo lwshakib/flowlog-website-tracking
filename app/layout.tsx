@@ -30,10 +30,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <head>
-        <script 
-  src="http://localhost:3000/analytics.js" 
-  data-website-id="cmjv8fmpa00001subkhi16geg"
-  data-domain="http://localhost:3000/"
+<script 
+  src="https://flowlog-website-tracking.vercel.app/analytics.js" 
+  data-website-id="cmjv8oukd000004l7j2ndg9c8"
+  data-domain="https://flowlog-website-tracking.vercel.app/"
   async
 ></script>
       </head>
