@@ -20,24 +20,24 @@ graph TD
         SDK[Flowlog SDK]
     end
     
-    subgraph Backend
-        Ingest[Ingest API]
-        Analytics[Analytics Engine]
+    subgraph "Flowlog App (Next.js)"
+        Ingest[Ingest API (/api/track)]
+        Dashboard[Admin Dashboard]
+    end
+    
+    subgraph External
+        Geo[IP-API (Geolocation)]
     end
 
     subgraph Storage
-        DB[(Database)]
-    end
-
-    subgraph Management
-        Dashboard[Admin Dashboard]
+        DB[(PostgreSQL)]
     end
 
     Browser --> SDK
     SDK -- Events --> Ingest
-    Ingest --> DB
-    DB --> Analytics
-    Analytics --> Dashboard
+    Ingest -- Lookup --> Geo
+    Ingest -- Write --> DB
+    Dashboard -- Read --> DB
 ```
 
 ## Tech Stack
