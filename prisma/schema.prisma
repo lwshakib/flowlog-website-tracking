@@ -23,6 +23,8 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  websites      Website[]
+
 
   @@unique([email])
   @@map("user")
@@ -74,4 +76,40 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model Website {
+  id        String   @id @default(cuid())
+  name      String
+  domain    String
+  ownerId        String
+  owner          User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  trackLocalhost Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  visits         Visit[]
+
+  @@index([ownerId])
+  @@map("website")
+}
+
+model Visit {
+  id        String   @id @default(cuid())
+  websiteId String
+  website   Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  referrer  String?
+  path      String?
+  entryTime DateTime @default(now())
+  exitTime  DateTime?
+  browser   String?
+  os        String?
+  device    String?
+  city        String?
+  region      String?
+  country     String?
+  countryCode String?
+  ip          String?
+
+  @@index([websiteId])
+  @@map("visit")
 }

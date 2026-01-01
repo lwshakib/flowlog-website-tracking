@@ -26,13 +26,13 @@ const plans = [
       yearly: "Free forever",
     },
     description:
-      "Perfect for students and hobbyists getting started with web development.",
+      "Perfect for small projects and personal blogs getting started.",
     features: [
-      "150K AI tokens / day",
-      "5 active workspaces",
-      "AI code completions",
-      "In-browser terminal",
-      "Live preview",
+      "10K monthly events",
+      "1 active website",
+      "Real-time dashboard",
+      "Basic flow analysis",
+      "7-day data retention",
       "Community support",
     ],
     cta: "Get started for free",
@@ -42,17 +42,17 @@ const plans = [
     name: "Pro",
     icon: Zap,
     price: {
-      monthly: 19,
-      yearly: 15,
+      monthly: 49,
+      yearly: 39,
     },
-    description: "For professional developers building production apps.",
+    description: "For growing businesses needing deeper insights.",
     features: [
-      "Unlimited AI tokens",
-      "Unlimited workspaces",
-      "Priority AI processing",
-      "GitHub integration",
-      "Custom domains",
-      "Advanced analytics",
+      "500K monthly events",
+      "Unlimited websites",
+      "Advanced flow analysis",
+      "Heatmaps & Recordings",
+      "Custom event tracking",
+      "90-day data retention",
       "Priority email support",
     ],
     cta: "Upgrade to Pro",
@@ -66,15 +66,15 @@ const plans = [
       monthly: "Custom pricing",
       yearly: "Custom pricing",
     },
-    description: "For teams and organizations with advanced needs.",
+    description: "For large scale applications with high traffic.",
     features: [
-      "Everything in Pro",
-      "Dedicated AI resources",
-      "Team collaboration",
-      "SSO & advanced security",
-      "Custom integrations",
+      "Unlimited monthly events",
+      "Dedicated infrastructure",
+      "White-labeling",
+      "Custom data retention",
+      "API & Webhooks",
       "SLA guarantees",
-      "24/7 dedicated support",
+      "24/7 dedicated account manager",
     ],
     cta: "Contact sales",
   },
@@ -124,8 +124,8 @@ export default function SimplePricing() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-muted-foreground max-w-md pt-2 text-lg"
           >
-            Start free and scale as you grow. All plans include AI-powered
-            coding and in-browser development.
+            Start free and scale as you grow. All plans include real-time tracking,
+            beautiful dashboards, and actionable user flow insights.
           </motion.p>
         </div>
 
