@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StatsList } from "@/components/stats-list";
 import { format, subDays, subMinutes } from "date-fns";
 
-export default async function WebsitePage({ params }: { params: { id: string } }) {
+export default async function WebsitePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const headerList = await headers();
   const session = await auth.api.getSession({
