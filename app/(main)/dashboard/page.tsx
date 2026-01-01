@@ -9,7 +9,7 @@ import { WebsiteCardActions } from "@/components/website-card-actions";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { VisitsTrendChart } from "@/components/analytics-charts";
-import { subDays, format, startOfDay } from "date-fns";
+import { subDays, format, startOfDay, subMinutes } from "date-fns";
 
 export default async function DashboardPage() {
   const session = await auth.api.getSession({
@@ -31,6 +31,38 @@ export default async function DashboardPage() {
   });
 
   const totalVisitsCount = websites.reduce((acc, site) => acc + site._count.visits, 0);
+
+  // Live Visitors (active in last 5 minutes and haven't exited)
+  const fiveMinutesAgo = subMinutes(new Date(), 5);
+  const liveVisitorsCount = await prisma.visit.count({
+    where: {
+      website: { ownerId: session.user.id },
+      exitTime: null,
+      entryTime: { gte: fiveMinutesAgo }
+    }
+  });
+
+  // Average Session Duration
+  const finishedVisits = await prisma.visit.findMany({
+    where: {
+      website: { ownerId: session.user.id },
+      exitTime: { not: null }
+    },
+    select: {
+      entryTime: true,
+      exitTime: true
+    }
+  });
+
+  const totalDurationSeconds = finishedVisits.reduce((acc, visit) => {
+    return acc + (visit.exitTime!.getTime() - visit.entryTime.getTime()) / 1000;
+  }, 0);
+  
+  const avgDurationSeconds = finishedVisits.length > 0 ? totalDurationSeconds / finishedVisits.length : 0;
+  
+  const avgMinutes = Math.floor(avgDurationSeconds / 60);
+  const avgSeconds = Math.floor(avgDurationSeconds % 60);
+  const avgSessionFormatted = finishedVisits.length > 0 ? `${avgMinutes}m ${avgSeconds}s` : "0s";
 
   // Fetch visits for the last 7 days to show in the trend chart
   const sevenDaysAgo = subDays(new Date(), 7);
@@ -88,7 +120,7 @@ export default async function DashboardPage() {
             <Clock className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">2m 45s</div>
+            <div className="text-2xl font-bold">{avgSessionFormatted}</div>
           </CardContent>
         </Card>
         <Card className="border-primary/10 shadow-sm">
@@ -97,7 +129,7 @@ export default async function DashboardPage() {
             <Users className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12</div>
+            <div className="text-2xl font-bold">{liveVisitorsCount}</div>
           </CardContent>
         </Card>
       </div>

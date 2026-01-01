@@ -71,3 +71,22 @@ export async function updateWebsite(id: string, data: { name?: string; domain?: 
   
   return website
 }
+
+export async function deleteWebsite(id: string) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
+
+  if (!session?.user) {
+    throw new Error("Unauthorized")
+  }
+
+  await prisma.website.delete({
+    where: {
+      id,
+      ownerId: session.user.id,
+    },
+  })
+
+  revalidatePath("/dashboard")
+}

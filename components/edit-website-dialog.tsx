@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { updateWebsite } from "@/app/actions/website"
+import { updateWebsite } from "@/actions/website"
 
 export function EditWebsiteDialog({ 
   website,

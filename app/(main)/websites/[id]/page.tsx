@@ -6,10 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Globe, Users, MousePointer2, Clock, Calendar, BarChart3, MapPin, Monitor, Globe2, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EditWebsiteDialog } from "@/components/edit-website-dialog";
+import { DeleteWebsiteDialog } from "@/components/delete-website-dialog";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { BrowserDistributionChart, TopPagesBarChart, VisitsTrendChart } from "@/components/analytics-charts";
-import { format, subDays } from "date-fns";
+import { format, subDays, subMinutes } from "date-fns";
 
 export default async function WebsitePage({ params }: { params: { id: string } }) {
   const { id } = await params;
@@ -45,6 +46,37 @@ export default async function WebsitePage({ params }: { params: { id: string } }
   // Calculate some stats
   const totalVisits = website._count.visits;
   const uniqueVisitors = new Set(website.visits.map(v => v.ip)).size;
+
+  // Live Visitors (active in last 5 minutes and haven't exited)
+  const fiveMinutesAgo = subMinutes(new Date(), 5);
+  const liveVisitorsCount = await prisma.visit.count({
+    where: {
+      websiteId: id,
+      exitTime: null,
+      entryTime: { gte: fiveMinutesAgo }
+    }
+  });
+
+  // Average Session Duration
+  const finishedVisits = await prisma.visit.findMany({
+    where: {
+      websiteId: id,
+      exitTime: { not: null }
+    },
+    select: {
+      entryTime: true,
+      exitTime: true
+    }
+  });
+
+  const totalDurationSeconds = finishedVisits.reduce((acc, visit) => {
+    return acc + (visit.exitTime!.getTime() - visit.entryTime.getTime()) / 1000;
+  }, 0);
+  
+  const avgDurationSeconds = finishedVisits.length > 0 ? totalDurationSeconds / finishedVisits.length : 0;
+  const avgMinutes = Math.floor(avgDurationSeconds / 60);
+  const avgSeconds = Math.floor(avgDurationSeconds % 60);
+  const avgTimeFormatted = finishedVisits.length > 0 ? `${avgMinutes}m ${avgSeconds}s` : "0s";
   
   // Group by path
   const pages = website.visits.reduce((acc: any, v) => {
@@ -79,7 +111,7 @@ export default async function WebsitePage({ params }: { params: { id: string } }
     <div className="p-6 lg:p-10 space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-   
+    
           <h1 className="text-3xl font-bold tracking-tight">{website.name}</h1>
           <p className="text-muted-foreground flex items-center gap-1 font-mono text-sm leading-none mt-1">
             <Globe2 className="h-3 w-3" /> {website.domain}
@@ -90,6 +122,9 @@ export default async function WebsitePage({ params }: { params: { id: string } }
               <Button variant="outline">Settings</Button>
            </EditWebsiteDialog>
            <Button>Export Data</Button>
+           <DeleteWebsiteDialog websiteId={website.id} websiteName={website.name}>
+              <Button variant="destructive">Delete</Button>
+           </DeleteWebsiteDialog>
         </div>
       </div>
 
@@ -100,8 +135,7 @@ export default async function WebsitePage({ params }: { params: { id: string } }
             <BarChart3 className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalVisits}</div>
-            <p className="text-xs text-muted-foreground mt-1">+12% from last week</p>
+            <div className="text-2xl font-bold">{totalVisits.toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card className="border-primary/10 shadow-sm">
@@ -110,18 +144,16 @@ export default async function WebsitePage({ params }: { params: { id: string } }
             <Users className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{uniqueVisitors}</div>
-            <p className="text-xs text-muted-foreground mt-1">+5% from last week</p>
+            <div className="text-2xl font-bold">{uniqueVisitors.toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card className="border-primary/10 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Bounce Rate</CardTitle>
-            <MousePointer2 className="h-4 w-4 text-primary" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Live Visitors</CardTitle>
+            <Users className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">42%</div>
-            <p className="text-xs text-muted-foreground mt-1">-2% from last week</p>
+            <div className="text-2xl font-bold">{liveVisitorsCount}</div>
           </CardContent>
         </Card>
         <Card className="border-primary/10 shadow-sm">
@@ -130,8 +162,7 @@ export default async function WebsitePage({ params }: { params: { id: string } }
             <Clock className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1m 32s</div>
-            <p className="text-xs text-muted-foreground mt-1">+10s from last week</p>
+            <div className="text-2xl font-bold">{avgTimeFormatted}</div>
           </CardContent>
         </Card>
       </div>

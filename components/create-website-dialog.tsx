@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { createWebsite } from "@/app/actions/website"
+import { createWebsite } from "@/actions/website"
 
 export function CreateWebsiteDialog({ children }: { children?: React.ReactNode }) {
   const [open, setOpen] = React.useState(false)
