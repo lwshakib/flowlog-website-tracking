@@ -10,6 +10,7 @@ import { DeleteWebsiteDialog } from "@/components/delete-website-dialog";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { BrowserDistributionChart, TopPagesBarChart, VisitsTrendChart } from "@/components/analytics-charts";
+import { ExportButton } from "@/components/export-button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StatsList } from "@/components/stats-list";
 import { format, subDays, subMinutes } from "date-fns";
@@ -161,7 +162,7 @@ export default async function WebsitePage({ params }: { params: { id: string } }
            <EditWebsiteDialog website={website}>
               <Button variant="outline">Settings</Button>
            </EditWebsiteDialog>
-           <Button>Export Data</Button>
+           <ExportButton websiteId={website.id} websiteName={website.name} />
            <DeleteWebsiteDialog websiteId={website.id} websiteName={website.name}>
               <Button variant="destructive">Delete</Button>
            </DeleteWebsiteDialog>
