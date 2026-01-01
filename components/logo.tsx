@@ -101,7 +101,7 @@ export interface LogoWithTextProps {
 }
 
 /**
- * A logo component that displays the LogoIcon alongside the "Vibe" text.
+ * A logo component that displays the LogoIcon alongside the "FlowLog" text.
  * Perfect for headers, navigation bars, and branding.
  * @param {LogoWithTextProps} props - The component props.
  * @returns {React.ReactElement} The rendered logo with text.
@@ -123,7 +123,7 @@ export const Logo = ({
           letterSpacing: "-0.02em",
         }}
       >
-        Vibe
+        FlowLog
       </span>
     </div>
   );

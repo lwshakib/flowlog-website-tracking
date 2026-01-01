@@ -119,7 +119,7 @@ export default function FooterSection() {
               className="w-full max-w-md space-y-3"
             >
               <label htmlFor="email" className="block text-sm font-medium">
-                Stay updated with Vibe
+                Stay updated with FlowLog
               </label>
               <div className="relative w-full">
                 <Input
@@ -177,7 +177,7 @@ export default function FooterSection() {
         <div className="animate-rotate-3d via-primary h-px w-full bg-gradient-to-r from-transparent to-transparent" />
         <div className="text-muted-foreground container m-auto flex flex-col items-center justify-between gap-4 p-4 text-xs md:flex-row md:px-0 md:text-sm">
           <p className="">
-            &copy; {currentYear} Vibe Coding Platform. All rights reserved.
+            &copy; {currentYear} FlowLog Website Tracking. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             {data().bottomLinks.map(({ href, label }) => (
