@@ -35,11 +35,9 @@ Please follow these steps to have your contribution considered by the maintainer
 
 1.  **Fork the repository** and create your branch from `main`.
 2.  **Ensure that you use `bun`** for dependency management.
-3.  **If you've added code that should be tested, add tests**.
-4.  **If you've changed APIs, update the documentation**.
-5.  **Make sure the test suite passes**.
-6.  **Commit your changes** with a descriptive commit message.
-7.  **Submit a pull request**.
+3.  **If you've changed APIs, update the documentation**.
+4.  **Commit your changes** with a descriptive commit message.
+5.  **Submit a pull request**.
 
 ## Styleguides
 
