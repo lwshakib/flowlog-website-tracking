@@ -1,36 +1,102 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Flowlog
+
+Understand Every Click. Optimize Every Flow. 
+
+Flowlog is a modern, real-time website tracking and analytics platform built for developers and product teams. It provides deep insights into user behavior with minimal performance overhead.
+
+## Features
+
+- **Real-time Tracking**: Monitor user interactions as they happen.
+- **Flow Visualization**: Understand user paths through intuitive diagrams.
+- **Privacy-focused**: Fully GDPR and CCPA compliant.
+- **Developer-friendly SDK**: Integrate with just a single line of code.
+
+## System Architecture
+
+```mermaid
+graph TD
+    subgraph Client Side
+        Browser[User Browser]
+        SDK[Flowlog SDK]
+    end
+    
+    subgraph Backend
+        Ingest[Ingest API]
+        Analytics[Analytics Engine]
+    end
+
+    subgraph Storage
+        DB[(Database)]
+    end
+
+    subgraph Management
+        Dashboard[Admin Dashboard]
+    end
+
+    Browser --> SDK
+    SDK -- Events --> Ingest
+    Ingest --> DB
+    DB --> Analytics
+    Analytics --> Dashboard
+```
+
+## Tech Stack
+
+- **Framework**: Next.js 16+
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS 4.0
+- **Database**: Prisma with PostgreSQL
+- **Authentication**: Better-Auth
+- **Animations**: Framer Motion
+- **Icons**: Lucide React
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- [Bun](https://bun.sh) installed on your machine.
+- A PostgreSQL database.
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/lwshakib/flowlog-website-tracking.git
+   cd flowlog-website-tracking
+   ```
+
+2. Install dependencies:
+   ```bash
+   bun install
+   ```
+
+3. Set up your environment variables:
+   Copy `.env.example` to `.env` and fill in your database and auth credentials.
+
+4. Run database migrations:
+   ```bash
+   bun db:migrate
+   ```
+
+5. Start the development server:
+   ```bash
+   bun dev
+   ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Contributing
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
-## Learn More
+## Code of Conduct
 
-To learn more about Next.js, take a look at the following resources:
+Help us keep Flowlog open and inclusive. Please read and follow [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Deploy on Vercel
+## Maintainer
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**lwshakib** - [GitHub Profile](https://github.com/lwshakib)
