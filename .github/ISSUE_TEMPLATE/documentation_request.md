@@ -1,9 +1,9 @@
 ---
-name: '📖 Documentation Request'
+name: "📖 Documentation Request"
 about: Suggest an improvement or addition to the documentation
-title: '[DOCS] '
+title: "[DOCS] "
 labels: documentation
-assignees: ''
+assignees: ""
 ---
 
 **Is there a specific page or section that needs improvement?**
