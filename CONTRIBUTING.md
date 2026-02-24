@@ -27,6 +27,7 @@ This section guides you through submitting an enhancement suggestion for Flowlog
 ### Pull Requests
 
 The process described here has several goals:
+
 - Maintain Flowlog's quality
 - Fix bugs and deliver features faster
 - Limit unnecessary work

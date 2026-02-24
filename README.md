@@ -1,6 +1,6 @@
 # Flowlog
 
-Understand Every Click. Optimize Every Flow. 
+Understand Every Click. Optimize Every Flow.
 
 Flowlog is a modern, real-time website tracking and analytics platform built for developers and product teams. It provides deep insights into user behavior with minimal performance overhead.
 
@@ -19,12 +19,12 @@ graph TD
         Browser[User Browser]
         SDK[Flowlog SDK]
     end
-    
+
     subgraph "Flowlog App (Next.js)"
         Ingest[Ingest API (/api/track)]
         Dashboard[Admin Dashboard]
     end
-    
+
     subgraph External
         Geo[IP-API (Geolocation)]
     end
@@ -60,12 +60,14 @@ graph TD
 ### Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/lwshakib/flowlog-website-tracking.git
    cd flowlog-website-tracking
    ```
 
 2. Install dependencies:
+
    ```bash
    bun install
    ```
@@ -74,6 +76,7 @@ graph TD
    Copy `.env.example` to `.env` and fill in your database and auth credentials.
 
 4. Run database migrations:
+
    ```bash
    bun db:migrate
    ```

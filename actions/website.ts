@@ -1,17 +1,21 @@
-"use server"
+"use server";
 
-import { revalidatePath } from "next/cache"
-import { headers } from "next/headers"
-import { auth } from "@/lib/auth"
-import prisma from "@/lib/prisma"
+import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
+import prisma from "@/lib/prisma";
 
-export async function createWebsite(formData: { name: string; domain: string; trackLocalhost: boolean }) {
+export async function createWebsite(formData: {
+  name: string;
+  domain: string;
+  trackLocalhost: boolean;
+}) {
   const session = await auth.api.getSession({
     headers: await headers(),
-  })
+  });
 
   if (!session?.user) {
-    throw new Error("Unauthorized")
+    throw new Error("Unauthorized");
   }
 
   const website = await prisma.website.create({
@@ -21,64 +25,67 @@ export async function createWebsite(formData: { name: string; domain: string; tr
       trackLocalhost: formData.trackLocalhost,
       ownerId: session.user.id,
     },
-  })
+  });
 
-  revalidatePath("/dashboard")
-  revalidatePath("/websites") // In case we have a websites list page
-  
-  return website
+  revalidatePath("/dashboard");
+  revalidatePath("/websites"); // In case we have a websites list page
+
+  return website;
 }
 
 export async function toggleLocalhost(id: string, enabled: boolean) {
   const session = await auth.api.getSession({
     headers: await headers(),
-  })
+  });
 
   if (!session?.user) {
-    throw new Error("Unauthorized")
+    throw new Error("Unauthorized");
   }
 
   await prisma.website.update({
-    where: { 
-        id,
-        ownerId: session.user.id
+    where: {
+      id,
+      ownerId: session.user.id,
     },
     data: { trackLocalhost: enabled },
-  })
+  });
 
-  revalidatePath("/dashboard")
+  revalidatePath("/dashboard");
 }
 
-export async function updateWebsite(id: string, data: { name?: string; domain?: string; trackLocalhost?: boolean }) {
+export async function updateWebsite(
+  id: string,
+  data: { name?: string; domain?: string; trackLocalhost?: boolean }
+) {
   const session = await auth.api.getSession({
     headers: await headers(),
-  })
+  });
 
   if (!session?.user) {
-    throw new Error("Unauthorized")
+    throw new Error("Unauthorized");
   }
 
   const website = await prisma.website.update({
-    where: { 
-        id,
-        ownerId: session.user.id
+    where: {
+      id,
+      ownerId: session.user.id,
     },
     data,
-  })
+  });
 
-  revalidatePath("/dashboard")
-  revalidatePath(`/websites/${id}`)
-  
-  return website
+  revalidatePath("/dashboard");
+  revalidatePath(`/websites/${id}`);
+
+  return website;
 }
 
 export async function deleteWebsite(id: string) {
   const session = await auth.api.getSession({
     headers: await headers(),
-  })
+  });
 
   if (!session?.user) {
-    throw new Error("Unauthorized")
+    throw new Error("Unauthorized");
   }
 
   await prisma.website.delete({
@@ -86,7 +93,7 @@ export async function deleteWebsite(id: string) {
       id,
       ownerId: session.user.id,
     },
-  })
+  });
 
-  revalidatePath("/dashboard")
+  revalidatePath("/dashboard");
 }

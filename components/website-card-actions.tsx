@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { EditWebsiteDialog } from "@/components/edit-website-dialog"
-import { DeleteWebsiteDialog } from "@/components/delete-website-dialog"
-import { ArrowUpRight } from "lucide-react"
+import { EditWebsiteDialog } from "@/components/edit-website-dialog";
+import { DeleteWebsiteDialog } from "@/components/delete-website-dialog";
+import { ArrowUpRight } from "lucide-react";
 
 export function WebsiteCardActions({ website }: { website: any }) {
   return (
@@ -13,5 +13,5 @@ export function WebsiteCardActions({ website }: { website: any }) {
         <ArrowUpRight className="h-4 w-4 text-primary" />
       </div>
     </div>
-  )
+  );
 }

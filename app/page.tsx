@@ -9,14 +9,14 @@ import Image from "next/image";
 export default function Home() {
   return (
     <div className="min-h-screen w-full">
-    <div id="home">
-      <HeroSection />
-    </div>
-    <FeaturesSection />
-    <AboutSection />
-    <SimplePricing />
-    <CTASection />
-    <FooterSection/>
+      <div id="home">
+        <HeroSection />
+      </div>
+      <FeaturesSection />
+      <AboutSection />
+      <SimplePricing />
+      <CTASection />
+      <FooterSection />
     </div>
   );
 }

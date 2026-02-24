@@ -17,7 +17,7 @@ export function ExportButton({ websiteId, websiteName }: ExportButtonProps) {
     setIsExporting(true);
     try {
       const response = await fetch(`/api/websites/${websiteId}/export`);
-      
+
       if (!response.ok) {
         throw new Error("Export failed");
       }
@@ -31,7 +31,7 @@ export function ExportButton({ websiteId, websiteName }: ExportButtonProps) {
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-      
+
       toast.success("Data exported successfully");
     } catch (error) {
       console.error("Export error:", error);
@@ -42,12 +42,7 @@ export function ExportButton({ websiteId, websiteName }: ExportButtonProps) {
   };
 
   return (
-    <Button 
-      onClick={handleExport} 
-      disabled={isExporting}
-      variant="outline"
-      className="gap-2"
-    >
+    <Button onClick={handleExport} disabled={isExporting} variant="outline" className="gap-2">
       {isExporting ? (
         <Loader2 className="h-4 w-4 animate-spin" />
       ) : (

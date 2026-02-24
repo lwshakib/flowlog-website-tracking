@@ -16,10 +16,7 @@ import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
 
-export function SignUpForm({
-  className,
-  ...props
-}: React.ComponentProps<"form">) {
+export function SignUpForm({ className, ...props }: React.ComponentProps<"form">) {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -68,11 +65,7 @@ export function SignUpForm({
   };
 
   return (
-    <form
-      className={cn("flex flex-col gap-6", className)}
-      onSubmit={handleSubmit}
-      {...props}
-    >
+    <form className={cn("flex flex-col gap-6", className)} onSubmit={handleSubmit} {...props}>
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
           <h1 className="text-2xl font-bold">Create an account</h1>

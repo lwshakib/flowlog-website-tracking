@@ -1,6 +1,3 @@
-import {create} from 'zustand'
+import { create } from "zustand";
 
-
-export const useFlowStore = create((set) => ({
-    
-}))
+export const useFlowStore = create((set) => ({}));

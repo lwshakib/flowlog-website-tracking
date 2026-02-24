@@ -23,9 +23,9 @@ export default async function DashboardPage() {
   const websites = await prisma.website.findMany({
     where: { ownerId: session.user.id },
     include: {
-        _count: {
-            select: { visits: true }
-        }
+      _count: {
+        select: { visits: true },
+      },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -38,28 +38,29 @@ export default async function DashboardPage() {
     where: {
       website: { ownerId: session.user.id },
       exitTime: null,
-      entryTime: { gte: fiveMinutesAgo }
-    }
+      entryTime: { gte: fiveMinutesAgo },
+    },
   });
 
   // Average Session Duration
   const finishedVisits = await prisma.visit.findMany({
     where: {
       website: { ownerId: session.user.id },
-      exitTime: { not: null }
+      exitTime: { not: null },
     },
     select: {
       entryTime: true,
-      exitTime: true
-    }
+      exitTime: true,
+    },
   });
 
   const totalDurationSeconds = finishedVisits.reduce((acc, visit) => {
     return acc + (visit.exitTime!.getTime() - visit.entryTime.getTime()) / 1000;
   }, 0);
-  
-  const avgDurationSeconds = finishedVisits.length > 0 ? totalDurationSeconds / finishedVisits.length : 0;
-  
+
+  const avgDurationSeconds =
+    finishedVisits.length > 0 ? totalDurationSeconds / finishedVisits.length : 0;
+
   const avgMinutes = Math.floor(avgDurationSeconds / 60);
   const avgSeconds = Math.floor(avgDurationSeconds % 60);
   const avgSessionFormatted = finishedVisits.length > 0 ? `${avgMinutes}m ${avgSeconds}s` : "0s";
@@ -69,9 +70,9 @@ export default async function DashboardPage() {
   const recentVisits = await prisma.visit.findMany({
     where: {
       website: { ownerId: session.user.id },
-      entryTime: { gte: sevenDaysAgo }
+      entryTime: { gte: sevenDaysAgo },
     },
-    select: { entryTime: true }
+    select: { entryTime: true },
   });
 
   // Group visits by date
@@ -80,9 +81,9 @@ export default async function DashboardPage() {
     return format(date, "yyyy-MM-dd");
   }).reverse();
 
-  const trendData = last7Days.map(date => ({
+  const trendData = last7Days.map((date) => ({
     date,
-    visits: recentVisits.filter(v => format(v.entryTime, "yyyy-MM-dd") === date).length
+    visits: recentVisits.filter((v) => format(v.entryTime, "yyyy-MM-dd") === date).length,
   }));
 
   return (
@@ -90,7 +91,9 @@ export default async function DashboardPage() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h1>
-          <p className="text-muted-foreground">Overview of your tracked websites and visitor metrics.</p>
+          <p className="text-muted-foreground">
+            Overview of your tracked websites and visitor metrics.
+          </p>
         </div>
         <CreateWebsiteDialog />
       </div>
@@ -98,7 +101,9 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <Card className="border-primary/10 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Websites</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Websites
+            </CardTitle>
             <Globe className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
@@ -107,7 +112,9 @@ export default async function DashboardPage() {
         </Card>
         <Card className="border-primary/10 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Pageviews</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Pageviews
+            </CardTitle>
             <MousePointer2 className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
@@ -116,7 +123,9 @@ export default async function DashboardPage() {
         </Card>
         <Card className="border-primary/10 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Avg. Session</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Avg. Session
+            </CardTitle>
             <Clock className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
@@ -125,7 +134,9 @@ export default async function DashboardPage() {
         </Card>
         <Card className="border-primary/10 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Live Visitors</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Live Visitors
+            </CardTitle>
             <Users className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
@@ -138,14 +149,16 @@ export default async function DashboardPage() {
         <CardHeader className="flex flex-row items-center justify-between">
           <div className="space-y-1">
             <CardTitle className="flex items-center gap-2">
-               <TrendingUp className="h-5 w-5 text-primary" /> 
-               Visitor Trends
+              <TrendingUp className="h-5 w-5 text-primary" />
+              Visitor Trends
             </CardTitle>
-            <CardDescription>Total visits across all your websites over the last 7 days.</CardDescription>
+            <CardDescription>
+              Total visits across all your websites over the last 7 days.
+            </CardDescription>
           </div>
         </CardHeader>
         <CardContent className="pt-4">
-           <VisitsTrendChart data={trendData} />
+          <VisitsTrendChart data={trendData} />
         </CardContent>
       </Card>
 
@@ -159,7 +172,9 @@ export default async function DashboardPage() {
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-medium">No websites tracked yet</h3>
-                <p className="text-muted-foreground max-w-sm">Add your first website to start collecting insights and visitor data in real-time.</p>
+                <p className="text-muted-foreground max-w-sm">
+                  Add your first website to start collecting insights and visitor data in real-time.
+                </p>
               </div>
               <CreateWebsiteDialog />
             </Card>
@@ -170,7 +185,9 @@ export default async function DashboardPage() {
                   <CardHeader className="pb-4">
                     <div className="flex justify-between items-start">
                       <div className="space-y-1">
-                        <CardTitle className="group-hover:text-primary transition-colors">{site.name}</CardTitle>
+                        <CardTitle className="group-hover:text-primary transition-colors">
+                          {site.name}
+                        </CardTitle>
                         <CardDescription className="flex items-center gap-1 font-mono text-xs">
                           <Globe className="h-3 w-3" /> {site.domain}
                         </CardDescription>
@@ -181,13 +198,19 @@ export default async function DashboardPage() {
                   <CardContent>
                     <div className="flex justify-between items-end">
                       <div className="space-y-1">
-                        <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Visits</p>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
+                          Visits
+                        </p>
                         <p className="text-2xl font-bold">{site._count.visits}</p>
                       </div>
                       <div className="h-10 w-24 bg-primary/5 rounded-md flex items-end justify-between p-1 gap-0.5">
-                         {[40, 70, 45, 90, 65, 80, 50].map((h, i) => (
-                           <div key={i} className="bg-primary/20 w-full rounded-t-sm" style={{ height: `${h}%` }} />
-                         ))}
+                        {[40, 70, 45, 90, 65, 80, 50].map((h, i) => (
+                          <div
+                            key={i}
+                            className="bg-primary/20 w-full rounded-t-sm"
+                            style={{ height: `${h}%` }}
+                          />
+                        ))}
                       </div>
                     </div>
                   </CardContent>
@@ -200,4 +223,3 @@ export default async function DashboardPage() {
     </div>
   );
 }
-

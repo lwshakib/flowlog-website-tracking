@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { useRouter } from "next/navigation"
-import { toast } from "sonner"
-import { Plus, Loader2 } from "lucide-react"
+import * as React from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Plus, Loader2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -14,51 +14,56 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { createWebsite } from "@/actions/website"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { createWebsite } from "@/actions/website";
 
 export function CreateWebsiteDialog({ children }: { children?: React.ReactNode }) {
-  const [open, setOpen] = React.useState(false)
-  const [loading, setLoading] = React.useState(false)
-  const [success, setSuccess] = React.useState<any>(null)
-  const router = useRouter()
+  const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [success, setSuccess] = React.useState<any>(null);
+  const router = useRouter();
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    setLoading(true)
+    event.preventDefault();
+    setLoading(true);
 
-    const formData = new FormData(event.currentTarget)
-    const name = formData.get("name") as string
-    const domain = formData.get("domain") as string
-    const trackLocalhost = formData.get("trackLocalhost") === "on"
+    const formData = new FormData(event.currentTarget);
+    const name = formData.get("name") as string;
+    const domain = formData.get("domain") as string;
+    const trackLocalhost = formData.get("trackLocalhost") === "on";
 
     try {
-      const website = await createWebsite({ name, domain, trackLocalhost })
-      setSuccess(website)
-      toast.success("Website created successfully")
-      router.refresh()
+      const website = await createWebsite({ name, domain, trackLocalhost });
+      setSuccess(website);
+      toast.success("Website created successfully");
+      router.refresh();
     } catch (error: any) {
-      toast.error(error.message || "Failed to create website")
+      toast.error(error.message || "Failed to create website");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
-  const scriptTag = success ? `<script 
+  const scriptTag = success
+    ? `<script 
   src="${window.location.origin}/analytics.js" 
   data-website-id="${success.id}"
   data-domain="${success.domain}"
   async
-></script>` : ""
+></script>`
+    : "";
 
   return (
-    <Dialog open={open} onOpenChange={(v) => {
-        setOpen(v)
-        if (!v) setSuccess(null)
-    }}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        setOpen(v);
+        if (!v) setSuccess(null);
+      }}
+    >
       <DialogTrigger asChild>
         {children || (
           <Button>
@@ -80,10 +85,15 @@ export function CreateWebsiteDialog({ children }: { children?: React.ReactNode }
             </div>
             <DialogFooter>
               <Button onClick={() => setOpen(false)}>Done</Button>
-              <Button variant="outline" onClick={() => {
-                navigator.clipboard.writeText(scriptTag)
-                toast.success("Copied to clipboard")
-              }}>Copy Script</Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  navigator.clipboard.writeText(scriptTag);
+                  toast.success("Copied to clipboard");
+                }}
+              >
+                Copy Script
+              </Button>
             </DialogFooter>
           </div>
         ) : (
@@ -101,7 +111,13 @@ export function CreateWebsiteDialog({ children }: { children?: React.ReactNode }
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="domain">Domain</Label>
-                <Input id="domain" name="domain" placeholder="example.com" required disabled={loading} />
+                <Input
+                  id="domain"
+                  name="domain"
+                  placeholder="example.com"
+                  required
+                  disabled={loading}
+                />
               </div>
               <div className="flex items-center space-x-2">
                 <Switch id="trackLocalhost" name="trackLocalhost" disabled={loading} />
@@ -118,5 +134,5 @@ export function CreateWebsiteDialog({ children }: { children?: React.ReactNode }
         )}
       </DialogContent>
     </Dialog>
-  )
+  );
 }

@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 export const metadata: Metadata = {
   title: "Flowlog - Website Analytics",
   description: "Privacy-friendly, real-time website analytics for everyone.",
- icons: {
+  icons: {
     icon: [
       {
         url: "/favicon_io/favicon-16x16.png",
