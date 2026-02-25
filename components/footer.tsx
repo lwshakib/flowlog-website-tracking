@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { Input } from "@/components/ui/input";
@@ -12,8 +11,8 @@ const data = () => ({
   navigation: {
     product: [
       { name: "Features", href: "#features" },
-      { name: "Workspaces", href: "/workspaces" },
-      { name: "Templates", href: "#" },
+      { name: "Dashboards", href: "/dashboard" },
+      { name: "Websites", href: "/websites" },
       { name: "Pricing", href: "#pricing" },
     ],
     developers: [
@@ -52,7 +51,9 @@ export default function FooterSection() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    // Avoid synchronous state updates in effects to prevent cascading renders
+    const frame = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(frame);
   }, []);
 
   const currentYear = new Date().getFullYear();
@@ -71,8 +72,8 @@ export default function FooterSection() {
               <Logo />
             </Link>
             <p className="text-muted-foreground max-w-md">
-              The ultimate AI-powered coding platform. Build, preview, and deploy full-stack
-              applications directly in your browser with WebContainer technology.
+              The ultimate website tracking and user flow analysis platform. Understand every click,
+              optimize conversion paths, and grow your business with actionable insights.
             </p>
             <div className="flex items-center gap-2">
               <div className="flex gap-2">
@@ -124,7 +125,7 @@ export default function FooterSection() {
               </p>
             </form>
             <h1 className="from-muted-foreground/15 bg-gradient-to-b bg-clip-text text-5xl font-extrabold text-transparent lg:text-7xl">
-              Code
+              Flow
             </h1>
           </div>
 

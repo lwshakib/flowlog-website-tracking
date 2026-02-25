@@ -1,3 +1,9 @@
+/**
+ * @file components/analytics-charts.tsx
+ * @description Collection of charting components for data visualization.
+ * Uses Recharts for rendering area, pie, and bar charts.
+ */
+
 "use client";
 
 import * as React from "react";
@@ -7,10 +13,8 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  ResponsiveContainer,
   XAxis,
   YAxis,
-  Tooltip,
   Pie,
   PieChart,
   Cell,
@@ -24,6 +28,12 @@ import {
   ChartConfig,
 } from "@/components/ui/chart";
 
+/**
+ * VisitsTrendChart Component
+ * @description Renders a line/area chart showing visitor trends over time.
+ * @param {Object} props - Component props.
+ * @param {Array<{ date: string; visits: number }>} props.data - Array of date and visit count pairs.
+ */
 export function VisitsTrendChart({ data }: { data: { date: string; visits: number }[] }) {
   const chartConfig = {
     visits: {
@@ -36,10 +46,12 @@ export function VisitsTrendChart({ data }: { data: { date: string; visits: numbe
     <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
       <AreaChart data={data} margin={{ left: 12, right: 12, top: 12, bottom: 12 }}>
         <defs>
+          {/* Gradient for the area fill */}
           <linearGradient id="fillVisits" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="var(--color-visits)" stopOpacity={0.4} />
             <stop offset="95%" stopColor="var(--color-visits)" stopOpacity={0} />
           </linearGradient>
+          {/* Subtle glow filter for the line */}
           <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="3" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
@@ -79,6 +91,12 @@ export function VisitsTrendChart({ data }: { data: { date: string; visits: numbe
   );
 }
 
+/**
+ * BrowserDistributionChart Component
+ * @description Renders a donut chart showing the breakdown of visitor browsers.
+ * @param {Object} props - Component props.
+ * @param {Array<{ name: string; value: number }>} props.data - Array of browser names and their visit counts.
+ */
 export function BrowserDistributionChart({ data }: { data: { name: string; value: number }[] }) {
   const COLORS = [
     "oklch(0.65 0.2 250)", // Vivid Blue
@@ -88,6 +106,7 @@ export function BrowserDistributionChart({ data }: { data: { name: string; value
     "oklch(0.65 0.25 30)", // Strong Orange
   ];
 
+  // Dynamically build the chart configuration based on provided browser data
   const chartConfig = data.reduce((acc, item, index) => {
     acc[item.name] = {
       label: item.name,
@@ -122,6 +141,7 @@ export function BrowserDistributionChart({ data }: { data: { name: string; value
           </Pie>
         </PieChart>
       </ChartContainer>
+      {/* Legend section */}
       <div className="grid grid-cols-2 gap-x-8 gap-y-2 mt-2 w-full px-4">
         {data.slice(0, 4).map((item, i) => (
           <div key={item.name} className="flex items-center justify-between text-[11px] group">
@@ -140,6 +160,12 @@ export function BrowserDistributionChart({ data }: { data: { name: string; value
   );
 }
 
+/**
+ * TopPagesBarChart Component
+ * @description Renders a horizontal bar chart showing the most visited paths.
+ * @param {Object} props - Component props.
+ * @param {Array<{ path: string; visits: number }>} props.data - Array of page paths and their visit counts.
+ */
 export function TopPagesBarChart({ data }: { data: { path: string; visits: number }[] }) {
   const chartConfig = {
     visits: {

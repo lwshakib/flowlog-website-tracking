@@ -1,8 +1,11 @@
+/* Main Tailwind Imports */
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Dark mode variant definition */
 @custom-variant dark (&:is(.dark *));
 
+/* Theme variable mapping for Tailwind v4 */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -46,6 +49,7 @@
   --radius-4xl: calc(var(--radius) + 16px);
 }
 
+/* Light Mode Variables (using OKLCH for modern color spaces) */
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
@@ -81,6 +85,7 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
+/* Dark Mode Variables */
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
@@ -115,14 +120,17 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* Base Styles */
 @layer base {
   html {
     scroll-behavior: smooth;
   }
   * {
+    /* Default border and outline settings for accessibility and consistent UI */
     @apply border-border outline-ring/50;
   }
   body {
+    /* Default background and text colors from theme */
     @apply bg-background text-foreground;
   }
 }

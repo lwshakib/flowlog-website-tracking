@@ -12,7 +12,12 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-export function DynamicBreadcrumb({ websites = [] }: { websites?: any[] }) {
+interface Website {
+  id: string;
+  name: string;
+}
+
+export function DynamicBreadcrumb({ websites = [] }: { websites?: Website[] }) {
   const pathname = usePathname();
   const pathSegments = pathname.split("/").filter((segment) => segment !== "");
 

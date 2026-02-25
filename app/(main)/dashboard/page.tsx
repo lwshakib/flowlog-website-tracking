@@ -1,17 +1,28 @@
+/**
+ * @file app/(main)/dashboard/page.tsx
+ * @description The main overview dashboard for authenticated users.
+ * Displays aggregated statistics across all tracked websites, including visitor trends and live visitor counts.
+ */
+
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Globe, Users, MousePointer2, Clock, Plus, TrendingUp } from "lucide-react";
+import { Globe, Users, MousePointer2, Clock, TrendingUp } from "lucide-react";
 import { CreateWebsiteDialog } from "@/components/create-website-dialog";
 import { WebsiteCardActions } from "@/components/website-card-actions";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { VisitsTrendChart } from "@/components/analytics-charts";
-import { subDays, format, startOfDay, subMinutes } from "date-fns";
+import { subDays, format, subMinutes } from "date-fns";
 
+/**
+ * DashboardPage Component
+ * @description Server-side component that calculates and renders high-level analytics metrics.
+ * @returns {JSX.Element} The rendered dashboard page.
+ */
 export default async function DashboardPage() {
+  // Ensure the user is authenticated
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -20,6 +31,7 @@ export default async function DashboardPage() {
     redirect("/sign-in");
   }
 
+  // Fetch all websites owned by the user, including visit counts
   const websites = await prisma.website.findMany({
     where: { ownerId: session.user.id },
     include: {
@@ -30,9 +42,10 @@ export default async function DashboardPage() {
     orderBy: { createdAt: "desc" },
   });
 
+  // Calculate total visits across all websites
   const totalVisitsCount = websites.reduce((acc, site) => acc + site._count.visits, 0);
 
-  // Live Visitors (active in last 5 minutes and haven't exited)
+  // Live Visitors: active in last 5 minutes (have not exited the session)
   const fiveMinutesAgo = subMinutes(new Date(), 5);
   const liveVisitorsCount = await prisma.visit.count({
     where: {
@@ -42,7 +55,8 @@ export default async function DashboardPage() {
     },
   });
 
-  // Average Session Duration
+  // Average Session Duration Calculation
+  // We only count visits that have an 'exitTime' recorded.
   const finishedVisits = await prisma.visit.findMany({
     where: {
       website: { ownerId: session.user.id },
@@ -65,7 +79,7 @@ export default async function DashboardPage() {
   const avgSeconds = Math.floor(avgDurationSeconds % 60);
   const avgSessionFormatted = finishedVisits.length > 0 ? `${avgMinutes}m ${avgSeconds}s` : "0s";
 
-  // Fetch visits for the last 7 days to show in the trend chart
+  // Fetch visits for the last 7 days to display in the trend chart
   const sevenDaysAgo = subDays(new Date(), 7);
   const recentVisits = await prisma.visit.findMany({
     where: {
@@ -75,7 +89,7 @@ export default async function DashboardPage() {
     select: { entryTime: true },
   });
 
-  // Group visits by date
+  // Prepare data for the trend chart by grouping visits by date
   const last7Days = Array.from({ length: 7 }, (_, i) => {
     const date = subDays(new Date(), i);
     return format(date, "yyyy-MM-dd");
@@ -88,6 +102,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="p-6 lg:p-10 space-y-8 animate-in fade-in duration-500">
+      {/* Dashboard Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h1>
@@ -98,7 +113,9 @@ export default async function DashboardPage() {
         <CreateWebsiteDialog />
       </div>
 
+      {/* Metric Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        {/* Total Websites Card */}
         <Card className="border-primary/10 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -110,6 +127,8 @@ export default async function DashboardPage() {
             <div className="text-2xl font-bold">{websites.length}</div>
           </CardContent>
         </Card>
+
+        {/* Total Pageviews Card */}
         <Card className="border-primary/10 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -121,6 +140,8 @@ export default async function DashboardPage() {
             <div className="text-2xl font-bold">{totalVisitsCount.toLocaleString()}</div>
           </CardContent>
         </Card>
+
+        {/* Average Session Duration Card */}
         <Card className="border-primary/10 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -132,6 +153,8 @@ export default async function DashboardPage() {
             <div className="text-2xl font-bold">{avgSessionFormatted}</div>
           </CardContent>
         </Card>
+
+        {/* Live Visitors Card */}
         <Card className="border-primary/10 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -145,6 +168,7 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
+      {/* Visitor Trends Chart */}
       <Card className="border-primary/10 shadow-lg">
         <CardHeader className="flex flex-row items-center justify-between">
           <div className="space-y-1">
@@ -162,10 +186,12 @@ export default async function DashboardPage() {
         </CardContent>
       </Card>
 
+      {/* Your Websites Section */}
       <div className="space-y-4">
         <h2 className="text-xl font-semibold">Your Websites</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {websites.length === 0 ? (
+            /* Empty State: No websites yet */
             <Card className="col-span-full border-dashed p-12 flex flex-col items-center justify-center text-center space-y-4">
               <div className="bg-primary/5 p-6 rounded-full">
                 <Globe className="h-12 w-12 text-primary opacity-50" />
@@ -179,6 +205,7 @@ export default async function DashboardPage() {
               <CreateWebsiteDialog />
             </Card>
           ) : (
+            /* List of Website Cards */
             websites.map((site) => (
               <Link key={site.id} href={`/websites/${site.id}`}>
                 <Card className="group hover:border-primary/30 transition-all duration-300 h-full cursor-pointer hover:shadow-lg">
@@ -203,6 +230,7 @@ export default async function DashboardPage() {
                         </p>
                         <p className="text-2xl font-bold">{site._count.visits}</p>
                       </div>
+                      {/* Mini Sparkline Visualization (Static Placeholder) */}
                       <div className="h-10 w-24 bg-primary/5 rounded-md flex items-end justify-between p-1 gap-0.5">
                         {[40, 70, 45, 90, 65, 80, 50].map((h, i) => (
                           <div

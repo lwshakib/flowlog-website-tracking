@@ -20,11 +20,18 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { updateWebsite } from "@/actions/website";
 
+interface Website {
+  id: string;
+  name: string;
+  domain: string;
+  trackLocalhost: boolean;
+}
+
 export function EditWebsiteDialog({
   website,
   children,
 }: {
-  website: { id: string; name: string; domain: string; trackLocalhost: boolean };
+  website: Website;
   children?: React.ReactNode;
 }) {
   const [open, setOpen] = React.useState(false);
@@ -45,8 +52,9 @@ export function EditWebsiteDialog({
       toast.success("Website updated successfully");
       setOpen(false);
       router.refresh();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update website");
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to update website";
+      toast.error(message);
     } finally {
       setLoading(false);
     }

@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
+import Image from "next/image";
 
 export function SignUpForm({ className, ...props }: React.ComponentProps<"form">) {
   const router = useRouter();
@@ -35,6 +36,7 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
         email,
         password,
         name,
+        callbackURL: `${window.location.origin}/verify-email?verified=true`,
       });
 
       if (error) {
@@ -43,8 +45,8 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
         return;
       }
 
-      router.push("/dashboard");
-      router.refresh();
+      // Redirect to verify-email page
+      router.push(`/verify-email?email=${encodeURIComponent(email)}`);
     } catch {
       setError("An unexpected error occurred");
       setIsLoading(false);
@@ -138,10 +140,12 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
             {socialLoading === "google" ? (
               <Loader2 className="size-4 animate-spin mr-2" />
             ) : (
-              <img
+              <Image
                 src="https://www.svgrepo.com/show/475656/google-color.svg"
                 alt="Google"
-                className="size-4"
+                className="size-4 mr-2"
+                width={16}
+                height={16}
               />
             )}
             Sign up with Google

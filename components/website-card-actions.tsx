@@ -4,7 +4,14 @@ import { EditWebsiteDialog } from "@/components/edit-website-dialog";
 import { DeleteWebsiteDialog } from "@/components/delete-website-dialog";
 import { ArrowUpRight } from "lucide-react";
 
-export function WebsiteCardActions({ website }: { website: any }) {
+interface Website {
+  id: string;
+  name: string;
+  domain: string;
+  trackLocalhost: boolean;
+}
+
+export function WebsiteCardActions({ website }: { website: Website }) {
   return (
     <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
       <EditWebsiteDialog website={website} />

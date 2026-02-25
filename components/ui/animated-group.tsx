@@ -100,6 +100,23 @@ const addDefaultVariants = (variants: Variants) => ({
   visible: { ...defaultItemVariants.visible, ...variants.visible },
 });
 
+// Create these outside of render to avoid "Cannot create components during render"
+const MotionComponentsCache = new Map<
+  React.ElementType,
+  React.ComponentType<Record<string, unknown>>
+>();
+
+function getMotionComponent(as: React.ElementType) {
+  const cached = MotionComponentsCache.get(as);
+  if (cached) return cached;
+
+  const component = motion.create(as as React.ComponentType) as React.ComponentType<
+    Record<string, unknown>
+  >;
+  MotionComponentsCache.set(as, component);
+  return component;
+}
+
 function AnimatedGroup({
   children,
   className,
@@ -115,22 +132,20 @@ function AnimatedGroup({
   const containerVariants = variants?.container || selectedVariants.container;
   const itemVariants = variants?.item || selectedVariants.item;
 
-  const MotionComponent = React.useMemo(() => motion.create(as as any), [as]);
-  const MotionChild = React.useMemo(() => motion.create(asChild as any), [asChild]);
+  const MotionComponent = getMotionComponent(as);
+  const MotionChild = getMotionComponent(asChild);
 
-  return (
-    <MotionComponent
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-      className={className}
-    >
-      {React.Children.map(children, (child, index) => (
-        <MotionChild key={index} variants={itemVariants}>
-          {child}
-        </MotionChild>
-      ))}
-    </MotionComponent>
+  return React.createElement(
+    MotionComponent,
+    {
+      initial: "hidden",
+      animate: "visible",
+      variants: containerVariants,
+      className: className,
+    },
+    React.Children.map(children, (child, index) =>
+      React.createElement(MotionChild, { key: index, variants: itemVariants }, child)
+    )
   );
 }
 

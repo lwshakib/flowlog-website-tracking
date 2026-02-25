@@ -1,3 +1,9 @@
+/**
+ * @file components/app-sidebar.tsx
+ * @description The main sidebar navigation component for the application.
+ * Manages links to the dashboard, individual website analytics, and user settings.
+ */
+
 "use client";
 
 import * as React from "react";
@@ -6,6 +12,7 @@ import { usePathname } from "next/navigation";
 import { LayoutDashboard, Globe, Settings, Monitor, Moon, Sun, Palette } from "lucide-react";
 
 import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
 
 import {
   Sidebar,
@@ -31,11 +38,23 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export function AppSidebar({ websites = [] }: { websites?: any[] }) {
+interface Website {
+  id: string;
+  name: string;
+}
+
+/**
+ * AppSidebar Component
+ * @description Renders the slide-out navigation sidebar.
+ * @param {Object} props - Component props.
+ * @param {Website[]} props.websites - List of websites owned by the user.
+ */
+export function AppSidebar({ websites = [] }: { websites?: Website[] }) {
   const pathname = usePathname();
   const { setOpenMobile } = useSidebar();
   const { setTheme, theme } = useTheme();
 
+  // Primary navigation items
   const mainItems = [
     {
       title: "Dashboard",
@@ -46,6 +65,7 @@ export function AppSidebar({ websites = [] }: { websites?: any[] }) {
 
   return (
     <Sidebar variant="inset" collapsible="icon">
+      {/* Sidebar Header: Branding and Logo */}
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -62,7 +82,9 @@ export function AppSidebar({ websites = [] }: { websites?: any[] }) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+
       <SidebarContent>
+        {/* Main Navigation Group */}
         <SidebarGroup>
           <SidebarMenu>
             {mainItems.map((item) => (
@@ -78,6 +100,7 @@ export function AppSidebar({ websites = [] }: { websites?: any[] }) {
           </SidebarMenu>
         </SidebarGroup>
 
+        {/* Dynamic Website Listings Group */}
         <SidebarGroup className="group-data-[collapsible=icon]:hidden">
           <SidebarGroupLabel className="flex items-center justify-between">
             <span>Your Websites</span>
@@ -107,6 +130,8 @@ export function AppSidebar({ websites = [] }: { websites?: any[] }) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      {/* Sidebar Footer: Settings and Appearance Toggles */}
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -118,37 +143,40 @@ export function AppSidebar({ websites = [] }: { websites?: any[] }) {
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent side="right" align="end" className="w-56">
+                {/* Theme Switcher Submenu */}
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger>
                     <Palette className="mr-2 h-4 w-4" />
                     <span>Appearance</span>
                   </DropdownMenuSubTrigger>
                   <DropdownMenuSubContent>
-                    <DropdownMenuItem onClick={() => setTheme("light")}>
+                    <DropdownMenuItem
+                      onClick={() => setTheme("light")}
+                      className={cn(theme === "light" && "bg-accent text-accent-foreground")}
+                    >
                       <Sun className="mr-2 h-4 w-4" />
                       <span>Light</span>
-                      {theme === "light" && (
-                        <span className="ml-auto text-xs text-primary">Active</span>
-                      )}
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setTheme("dark")}>
+                    <DropdownMenuItem
+                      onClick={() => setTheme("dark")}
+                      className={cn(theme === "dark" && "bg-accent text-accent-foreground")}
+                    >
                       <Moon className="mr-2 h-4 w-4" />
                       <span>Dark</span>
-                      {theme === "dark" && (
-                        <span className="ml-auto text-xs text-primary">Active</span>
-                      )}
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setTheme("system")}>
+                    <DropdownMenuItem
+                      onClick={() => setTheme("system")}
+                      className={cn(theme === "system" && "bg-accent text-accent-foreground")}
+                    >
                       <Monitor className="mr-2 h-4 w-4" />
                       <span>System</span>
-                      {theme === "system" && (
-                        <span className="ml-auto text-xs text-primary">Active</span>
-                      )}
                     </DropdownMenuItem>
                   </DropdownMenuSubContent>
                 </DropdownMenuSub>
+
+                {/* Account Link */}
                 <DropdownMenuItem asChild>
-                  <Link href="/settings">
+                  <Link href="/account">
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Account Settings</span>
                   </Link>

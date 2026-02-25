@@ -23,7 +23,7 @@ import { createWebsite } from "@/actions/website";
 export function CreateWebsiteDialog({ children }: { children?: React.ReactNode }) {
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
-  const [success, setSuccess] = React.useState<any>(null);
+  const [success, setSuccess] = React.useState<{ id: string; domain: string } | null>(null);
   const router = useRouter();
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -40,8 +40,9 @@ export function CreateWebsiteDialog({ children }: { children?: React.ReactNode }
       setSuccess(website);
       toast.success("Website created successfully");
       router.refresh();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to create website");
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to create website";
+      toast.error(message);
     } finally {
       setLoading(false);
     }

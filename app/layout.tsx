@@ -1,8 +1,18 @@
+/**
+ * @file app/layout.tsx
+ * @description The root layout component of the Flowlog application.
+ * This file defines the global HTML structure, metadata, and common providers used across the app.
+ */
+
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 
+/**
+ * Metadata configuration for the application.
+ * Defines the title, description, icons, and web manifest for SEO and browser display.
+ */
 export const metadata: Metadata = {
   title: "Flowlog - Website Analytics",
   description: "Privacy-friendly, real-time website analytics for everyone.",
@@ -35,6 +45,13 @@ export const metadata: Metadata = {
   manifest: "/favicon_io/site.webmanifest",
 };
 
+/**
+ * RootLayout Component
+ * @description The entry point for the application's UI structure.
+ * @param {Object} props - Component props.
+ * @param {React.ReactNode} props.children - The content to be rendered within the layout.
+ * @returns {JSX.Element} The rendered root layout.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -43,6 +60,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <head>
+        {/* Flowlog Analytics Script - Self-tracking for the dashboard itself */}
         <script
           src="https://flowlog-website-tracking.vercel.app/analytics.js"
           data-website-id="cmjva7wfc000104kzb2z6ctx5"
@@ -51,13 +69,17 @@ export default function RootLayout({
         ></script>
       </head>
       <body className="antialiased">
+        {/* ThemeProvider: Manages light/dark mode throughout the application */}
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
+          {/* Main content of the page */}
           {children}
+
+          {/* Toaster: Global notification system using sonner */}
           <Toaster />
         </ThemeProvider>
       </body>

@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
+import Image from "next/image";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"form">) {
   const router = useRouter();
@@ -24,9 +25,12 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
   const [isLoading, setIsLoading] = useState(false);
   const [socialLoading, setSocialLoading] = useState<string | null>(null);
 
+  const [isUnverified, setIsUnverified] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setIsUnverified(false);
     setIsLoading(true);
 
     try {
@@ -36,7 +40,12 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
       });
 
       if (error) {
-        setError(error.message || "Failed to sign in");
+        if (error.status === 403 || error.message?.toLowerCase().includes("verify")) {
+          setIsUnverified(true);
+          setError("Please verify your email address to log in.");
+        } else {
+          setError(error.message || "Failed to sign in");
+        }
         setIsLoading(false);
         return;
       }
@@ -45,6 +54,21 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
       router.refresh();
     } catch {
       setError("An unexpected error occurred");
+      setIsLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    try {
+      setIsLoading(true);
+      await authClient.sendVerificationEmail({
+        email,
+        callbackURL: `${window.location.origin}/verify-email?verified=true`,
+      });
+      setIsLoading(false);
+      router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+    } catch {
+      setError("Failed to resend verification email");
       setIsLoading(false);
     }
   };
@@ -73,8 +97,19 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
         </div>
 
         {error && (
-          <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-md text-center">
+          <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-md text-center flex flex-col gap-2 items-center">
             {error}
+            {isUnverified && (
+              <Button
+                variant="link"
+                size="sm"
+                className="text-destructive font-semibold h-auto p-0"
+                onClick={handleResendVerification}
+                type="button"
+              >
+                Resend verification email
+              </Button>
+            )}
           </div>
         )}
 
@@ -132,10 +167,12 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
             {socialLoading === "google" ? (
               <Loader2 className="size-4 animate-spin mr-2" />
             ) : (
-              <img
+              <Image
                 src="https://www.svgrepo.com/show/475656/google-color.svg"
                 alt="Google"
-                className="size-4"
+                className="size-4 mr-2"
+                width={16}
+                height={16}
               />
             )}
             Login with Google

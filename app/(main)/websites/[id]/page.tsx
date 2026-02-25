@@ -1,25 +1,18 @@
+/**
+ * @file app/(main)/websites/[id]/page.tsx
+ * @description Detailed analytics page for a specific website.
+ * Provides granular insights into pages, sources, geographic locations, and device types.
+ */
+
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Globe,
-  Users,
-  MousePointer2,
-  Clock,
-  Calendar,
-  BarChart3,
-  MapPin,
-  Monitor,
-  Globe2,
-  TrendingUp,
-} from "lucide-react";
+import { Users, Clock, BarChart3, MapPin, Monitor, Globe2, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EditWebsiteDialog } from "@/components/edit-website-dialog";
 import { DeleteWebsiteDialog } from "@/components/delete-website-dialog";
-import { Label } from "@/components/ui/label";
-import Link from "next/link";
 import {
   BrowserDistributionChart,
   TopPagesBarChart,
@@ -30,9 +23,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StatsList } from "@/components/stats-list";
 import { format, subDays, subMinutes } from "date-fns";
 
+/**
+ * WebsitePage Component
+ * @description Server-side component that fetches and processes data for a single website's analytics.
+ * @param {Object} props - Component props.
+ * @param {Promise<{ id: string }>} props.params - URL parameters containing the website ID.
+ * @returns {JSX.Element} The rendered detailed website analytics page.
+ */
 export default async function WebsitePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const headerList = await headers();
+
+  // Ensure the user is authenticated
   const session = await auth.api.getSession({
     headers: headerList,
   });
@@ -41,6 +43,7 @@ export default async function WebsitePage({ params }: { params: Promise<{ id: st
     redirect("/sign-in");
   }
 
+  // Fetch website details along with its recent visits
   const website = await prisma.website.findUnique({
     where: {
       id,
@@ -49,7 +52,7 @@ export default async function WebsitePage({ params }: { params: Promise<{ id: st
     include: {
       visits: {
         orderBy: { entryTime: "desc" },
-        take: 100,
+        take: 100, // Limit to recent 100 visits for initial display
       },
       _count: {
         select: { visits: true },
@@ -61,11 +64,11 @@ export default async function WebsitePage({ params }: { params: Promise<{ id: st
     notFound();
   }
 
-  // Calculate some stats
+  // Basic descriptive stats
   const totalVisits = website._count.visits;
   const uniqueVisitors = new Set(website.visits.map((v) => v.ip)).size;
 
-  // Live Visitors (active in last 5 minutes and haven't exited)
+  // Live Visitors: active in the last 5 minutes
   const fiveMinutesAgo = subMinutes(new Date(), 5);
   const liveVisitorsCount = await prisma.visit.count({
     where: {
@@ -75,7 +78,7 @@ export default async function WebsitePage({ params }: { params: Promise<{ id: st
     },
   });
 
-  // Average Session Duration
+  // Average Session Duration Calculation
   const finishedVisits = await prisma.visit.findMany({
     where: {
       websiteId: id,
@@ -97,24 +100,26 @@ export default async function WebsitePage({ params }: { params: Promise<{ id: st
   const avgSeconds = Math.floor(avgDurationSeconds % 60);
   const avgTimeFormatted = finishedVisits.length > 0 ? `${avgMinutes}m ${avgSeconds}s` : "0s";
 
-  // Group by path
-  const pages = website.visits.reduce((acc: any, v) => {
+  // Data processing: Group visits by various dimensions for charts and lists
+
+  // Group by URL Path: Identifies the most popular pages
+  const pages = website.visits.reduce((acc: Record<string, number>, v) => {
     const path = v.path || "/";
     acc[path] = (acc[path] || 0) + 1;
     return acc;
   }, {});
   const sortedPages = Object.entries(pages)
-    .sort((a: any, b: any) => b[1] - a[1])
+    .sort((a, b) => b[1] - a[1])
     .slice(0, 10);
 
-  // Group by Sources (UTM or Referrer)
-  const sources = website.visits.reduce((acc: any, v) => {
+  // Group by Traffic Sources: UTM parameters or Referrer headers
+  const sources = website.visits.reduce((acc: Record<string, number>, v) => {
     let source = v.utmSource || "Direct";
     if (source === "Direct" && v.referrer) {
       try {
         const refUrl = new URL(v.referrer);
         source = refUrl.hostname;
-      } catch (e) {
+      } catch {
         source = v.referrer;
       }
     }
@@ -122,39 +127,39 @@ export default async function WebsitePage({ params }: { params: Promise<{ id: st
     return acc;
   }, {});
   const sortedSources = Object.entries(sources)
-    .sort((a: any, b: any) => b[1] - a[1])
+    .sort((a, b) => b[1] - a[1])
     .slice(0, 10);
 
-  // Group by Country
-  const countries = website.visits.reduce((acc: any, v) => {
+  // Group by Geographic Location: Countries
+  const countries = website.visits.reduce((acc: Record<string, number>, v) => {
     const country = v.country || "Unknown";
     acc[country] = (acc[country] || 0) + 1;
     return acc;
   }, {});
   const sortedCountries = Object.entries(countries)
-    .sort((a: any, b: any) => b[1] - a[1])
+    .sort((a, b) => b[1] - a[1])
     .slice(0, 10);
 
-  // Group by Device Type
-  const devices = website.visits.reduce((acc: any, v) => {
+  // Group by Device Category: Desktop, Mobile, Tablet
+  const devices = website.visits.reduce((acc: Record<string, number>, v) => {
     const device = v.device || "desktop";
     acc[device] = (acc[device] || 0) + 1;
     return acc;
   }, {});
-  const sortedDevices = Object.entries(devices).sort((a: any, b: any) => b[1] - a[1]);
+  const sortedDevices = Object.entries(devices).sort((a, b) => b[1] - a[1]);
 
-  // Group by OS
-  const osSystems = website.visits.reduce((acc: any, v) => {
+  // Group by Operating System
+  const osSystems = website.visits.reduce((acc: Record<string, number>, v) => {
     const os = v.os || "Unknown";
     acc[os] = (acc[os] || 0) + 1;
     return acc;
   }, {});
   const sortedOS = Object.entries(osSystems)
-    .sort((a: any, b: any) => b[1] - a[1])
+    .sort((a, b) => b[1] - a[1])
     .slice(0, 10);
 
-  // Group by Browser
-  const browsers = website.visits.reduce((acc: any, v) => {
+  // Group by Web Browser
+  const browsers = website.visits.reduce((acc: Record<string, number>, v) => {
     const browser = v.browser || "Unknown";
     acc[browser] = (acc[browser] || 0) + 1;
     return acc;
@@ -163,7 +168,7 @@ export default async function WebsitePage({ params }: { params: Promise<{ id: st
     .map(([name, value]) => ({ name, value: value as number }))
     .sort((a, b) => b.value - a.value);
 
-  // Group by date (last 7 days)
+  // Group visits by date for the Trend Chart (last 7 days)
   const last7Days = Array.from({ length: 7 }, (_, i) => {
     const date = subDays(new Date(), i);
     return format(date, "yyyy-MM-dd");
@@ -176,6 +181,7 @@ export default async function WebsitePage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="p-6 lg:p-10 space-y-8 animate-in fade-in duration-500">
+      {/* Page Header: Title, Domain, and Action Buttons */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">{website.name}</h1>
@@ -184,6 +190,7 @@ export default async function WebsitePage({ params }: { params: Promise<{ id: st
           </p>
         </div>
         <div className="flex gap-2">
+          {/* Website Management Dialogs */}
           <EditWebsiteDialog website={website}>
             <Button variant="outline">Settings</Button>
           </EditWebsiteDialog>
@@ -194,6 +201,7 @@ export default async function WebsitePage({ params }: { params: Promise<{ id: st
         </div>
       </div>
 
+      {/* High-level Statistics Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <Card className="border-primary/10 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
@@ -239,6 +247,7 @@ export default async function WebsitePage({ params }: { params: Promise<{ id: st
         </Card>
       </div>
 
+      {/* Main Charts Section: Trend Chart and Browser Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <Card className="lg:col-span-2 border-primary/10 shadow-sm">
           <CardHeader>
@@ -264,8 +273,10 @@ export default async function WebsitePage({ params }: { params: Promise<{ id: st
         </Card>
       </div>
 
+      {/* Segmented Analytics Data using Tabs */}
       <div className="space-y-6">
         <Tabs defaultValue="pages" className="w-full">
+          {/* Navigation for Analytics Categories */}
           <TabsList className="grid w-full grid-cols-4 lg:w-[600px] mb-4">
             <TabsTrigger value="pages">Pages</TabsTrigger>
             <TabsTrigger value="sources">Sources</TabsTrigger>
@@ -273,6 +284,7 @@ export default async function WebsitePage({ params }: { params: Promise<{ id: st
             <TabsTrigger value="devices">Devices</TabsTrigger>
           </TabsList>
 
+          {/* Pages Tab: Most visited paths and recent activity */}
           <TabsContent
             value="pages"
             className="animate-in fade-in slide-in-from-bottom-2 duration-300"
@@ -292,6 +304,7 @@ export default async function WebsitePage({ params }: { params: Promise<{ id: st
                 </CardContent>
               </Card>
 
+              {/* Recent Visits Feed */}
               <Card className="border-primary/10 shadow-sm">
                 <CardHeader>
                   <CardTitle>Recent Visits</CardTitle>
@@ -336,6 +349,7 @@ export default async function WebsitePage({ params }: { params: Promise<{ id: st
             </div>
           </TabsContent>
 
+          {/* Sources Tab: Traffic sources and UTM parameter tracking */}
           <TabsContent
             value="sources"
             className="animate-in fade-in slide-in-from-bottom-2 duration-300"
@@ -360,31 +374,33 @@ export default async function WebsitePage({ params }: { params: Promise<{ id: st
                   <CardDescription>Marketing campaign performance.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-8">
+                  {/* Aggregated UTM Campaign data */}
                   <StatsList
                     title="UTM Campaign"
                     data={
                       Object.entries(
-                        website.visits.reduce((acc: any, v) => {
+                        website.visits.reduce((acc: Record<string, number>, v) => {
                           if (v.utmCampaign) acc[v.utmCampaign] = (acc[v.utmCampaign] || 0) + 1;
                           return acc;
                         }, {})
                       )
-                        .sort((a: any, b: any) => b[1] - a[1])
+                        .sort((a, b) => b[1] - a[1])
                         .slice(0, 5) as [string, number][]
                     }
                     total={totalVisits}
                   />
 
+                  {/* Aggregated UTM Medium data */}
                   <StatsList
                     title="UTM Medium"
                     data={
                       Object.entries(
-                        website.visits.reduce((acc: any, v) => {
+                        website.visits.reduce((acc: Record<string, number>, v) => {
                           if (v.utmMedium) acc[v.utmMedium] = (acc[v.utmMedium] || 0) + 1;
                           return acc;
                         }, {})
                       )
-                        .sort((a: any, b: any) => b[1] - a[1])
+                        .sort((a, b) => b[1] - a[1])
                         .slice(0, 5) as [string, number][]
                     }
                     total={totalVisits}
@@ -394,6 +410,7 @@ export default async function WebsitePage({ params }: { params: Promise<{ id: st
             </div>
           </TabsContent>
 
+          {/* Locations Tab: Geographic data (Countries and Cities) */}
           <TabsContent
             value="locations"
             className="animate-in fade-in slide-in-from-bottom-2 duration-300"
@@ -422,13 +439,13 @@ export default async function WebsitePage({ params }: { params: Promise<{ id: st
                     title="City"
                     data={
                       Object.entries(
-                        website.visits.reduce((acc: any, v) => {
+                        website.visits.reduce((acc: Record<string, number>, v) => {
                           const city = v.city || "Unknown";
                           acc[city] = (acc[city] || 0) + 1;
                           return acc;
                         }, {})
                       )
-                        .sort((a: any, b: any) => b[1] - a[1])
+                        .sort((a, b) => b[1] - a[1])
                         .slice(0, 10) as [string, number][]
                     }
                     total={totalVisits}
@@ -438,11 +455,13 @@ export default async function WebsitePage({ params }: { params: Promise<{ id: st
             </div>
           </TabsContent>
 
+          {/* Devices Tab: Detailed technical stats (Devices, OS, Browsers) */}
           <TabsContent
             value="devices"
             className="animate-in fade-in slide-in-from-bottom-2 duration-300"
           >
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Device Type List */}
               <Card className="border-primary/10 shadow-sm">
                 <CardHeader>
                   <CardTitle>Devices</CardTitle>
@@ -455,6 +474,8 @@ export default async function WebsitePage({ params }: { params: Promise<{ id: st
                   />
                 </CardContent>
               </Card>
+
+              {/* Operating System List */}
               <Card className="border-primary/10 shadow-sm">
                 <CardHeader>
                   <CardTitle>Operating Systems</CardTitle>
@@ -463,6 +484,8 @@ export default async function WebsitePage({ params }: { params: Promise<{ id: st
                   <StatsList title="OS" data={sortedOS as [string, number][]} total={totalVisits} />
                 </CardContent>
               </Card>
+
+              {/* Browser List */}
               <Card className="border-primary/10 shadow-sm">
                 <CardHeader>
                   <CardTitle>Browsers</CardTitle>
@@ -480,6 +503,7 @@ export default async function WebsitePage({ params }: { params: Promise<{ id: st
         </Tabs>
       </div>
 
+      {/* Integration Guide: Copy-paste instructions for the tracking script */}
       <Card className="border-primary/10 shadow-sm border-dashed">
         <CardHeader>
           <CardTitle className="text-lg">Installation Script</CardTitle>

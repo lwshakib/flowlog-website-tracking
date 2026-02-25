@@ -160,6 +160,7 @@ const createVariantsWithTransition = (
   if (!transition) return baseVariants;
 
   const { exit: _, ...mainTransition } = transition;
+  void _; // Mark as used
 
   return {
     ...baseVariants,

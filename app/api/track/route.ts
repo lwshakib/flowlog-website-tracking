@@ -1,19 +1,35 @@
+/**
+ * @file app/api/track/route.ts
+ * @description The main API endpoint for tracking website visits.
+ * Handles 'start' (new visit) and 'end' (session termination) tracking events.
+ * It also performs IP geolocation and User-Agent parsing.
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { UAParser } from "ua-parser-js";
 
+/**
+ * POST Handler
+ * @description Receives tracking data from the 'analytics.js' script.
+ * @param {NextRequest} req - The incoming request object.
+ * @returns {Promise<NextResponse>} JSON response indicating success or error.
+ */
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { type, websiteId, visitId, referrer, path } = body;
 
+    // Basic validation: websiteId is required for any tracking
     if (!websiteId) {
       return NextResponse.json({ error: "websiteId is required" }, { status: 400 });
     }
 
+    // Event: New visit session started
     if (type === "start") {
       const { hostname } = body;
 
+      // Check if the website exists and if localhost tracking is enabled
       const website = await prisma.website.findUnique({
         where: { id: websiteId },
         select: { trackLocalhost: true },
@@ -24,16 +40,18 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: true, message: "Localhost tracking disabled" });
       }
 
+      // Extract client information from headers
       const userAgent = req.headers.get("user-agent") || "";
       const ip =
         req.headers.get("x-forwarded-for")?.split(",")[0] || req.headers.get("x-real-ip") || "";
 
+      // Initialize location data with defaults
       let city = req.headers.get("x-vercel-ip-city") || "Unknown";
       let country = req.headers.get("x-vercel-ip-country") || "Unknown";
       let region = "Unknown";
       let countryCode = "Unknown";
 
-      // Geolocation primary source using ip-api.com
+      // Geolocation primary source using ip-api.com (if not on a private/local IP)
       if (
         ip &&
         ip !== "::1" &&
@@ -55,7 +73,7 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      // Parse UA for better info
+      // Parse User-Agent for detailed device and OS information
       const parser = new UAParser(userAgent);
       const browser = parser.getBrowser().name || "Other";
       const os = parser.getOS().name || "Other";
@@ -63,6 +81,7 @@ export async function POST(req: NextRequest) {
 
       const { utmSource, utmMedium, utmCampaign } = body;
 
+      // Create a new visit record in the database
       const visit = await prisma.visit.create({
         data: {
           websiteId,
@@ -83,11 +102,16 @@ export async function POST(req: NextRequest) {
         },
       });
 
+      // Return the generated visit ID to the client for subsequent 'end' event
       return NextResponse.json({ success: true, id: visit.id });
-    } else if (type === "end") {
+    }
+    // Event: Visit session ended (e.g., page closed)
+    else if (type === "end") {
       if (!visitId) {
         return NextResponse.json({ success: true, message: "No visitId provided" });
       }
+
+      // Update the visit record with the exit time
       await prisma.visit.update({
         where: { id: visitId },
         data: {
@@ -103,7 +127,12 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function OPTIONS(req: NextRequest) {
+/**
+ * OPTIONS Handler
+ * @description Handles CORS preflight requests for cross-origin tracking.
+ * @returns {NextResponse} Empty response with CORS headers.
+ */
+export async function OPTIONS() {
   return new NextResponse(null, {
     status: 204,
     headers: {

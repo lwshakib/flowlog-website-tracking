@@ -1,5 +1,6 @@
 "use client";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Link from "next/link";
 import NumberFlow from "@number-flow/react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -84,7 +85,9 @@ export default function SimplePricing() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    // Avoid synchronous state updates in effects to prevent cascading renders
+    const frame = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(frame);
   }, []);
 
   if (!mounted) return null;
@@ -263,6 +266,7 @@ export default function SimplePricing() {
                 </CardContent>
                 <CardFooter>
                   <Button
+                    asChild
                     variant={plan.popular ? "default" : "outline"}
                     className={cn(
                       "w-full font-medium transition-all duration-300",
@@ -271,8 +275,10 @@ export default function SimplePricing() {
                         : "hover:border-primary/30 hover:bg-primary/5 hover:text-primary"
                     )}
                   >
-                    {plan.cta}
-                    <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                    <Link href="/sign-up">
+                      {plan.cta}
+                      <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                    </Link>
                   </Button>
                 </CardFooter>
 

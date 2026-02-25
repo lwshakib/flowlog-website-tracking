@@ -40,8 +40,9 @@ export function DeleteWebsiteDialog({
       setOpen(false);
       router.push("/dashboard");
       router.refresh();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to delete website");
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to delete website";
+      toast.error(message);
     } finally {
       setLoading(false);
     }

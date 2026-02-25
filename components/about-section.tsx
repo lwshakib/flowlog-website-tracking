@@ -14,15 +14,24 @@ export default function AboutSection() {
             viewport={{ once: true }}
             className="flex-1"
           >
-            <div className="relative">
-              <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
-              <Image
-                src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop"
-                alt="Analytics Dashboard"
-                width={800}
-                height={600}
-                className="relative rounded-2xl border shadow-2xl"
-              />
+            <div className="relative group">
+              <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full transition-all duration-500 group-hover:bg-primary/30" />
+              <div className="relative rounded-2xl border border-border/50 shadow-2xl overflow-hidden bg-background">
+                <Image
+                  src="/dark.png"
+                  alt="FlowLog Analytics Dashboard"
+                  width={2700}
+                  height={1440}
+                  className="w-full h-auto hidden dark:block"
+                />
+                <Image
+                  src="/light.png"
+                  alt="FlowLog Analytics Dashboard"
+                  width={2700}
+                  height={1440}
+                  className="w-full h-auto dark:hidden"
+                />
+              </div>
             </div>
           </motion.div>
 
@@ -32,10 +41,10 @@ export default function AboutSection() {
             viewport={{ once: true }}
             className="flex-1"
           >
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">Built for the Modern Web</h2>
+            <h2 className="text-3xl md:text-5xl font-bold mb-6">Built for Modern Product Teams</h2>
             <p className="text-muted-foreground text-lg mb-8">
-              Flowlog was born out of a simple need: to understand how users actually interact with
-              complex web applications without being overwhelmed by raw data.
+              FlowLog provides the clarity you need to optimize your user experience. Real-time
+              insights and beautiful visualizations allow you to act on data, not just collect it.
             </p>
             <div className="space-y-6">
               {[
