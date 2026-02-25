@@ -1,4 +1,4 @@
-# Flowlog
+# <img src="public/logo.svg" width="32" align="center"> Flowlog
 
 Understand Every Click. Optimize Every Flow.
 
@@ -10,27 +10,29 @@ Flowlog is a modern, real-time website tracking and analytics platform built for
 - **Flow Visualization**: Understand user paths through intuitive diagrams.
 - **Privacy-focused**: Fully GDPR and CCPA compliant.
 - **Developer-friendly SDK**: Integrate with just a single line of code.
+- **Beautiful Dashboards**: High-performance analytics with modern aesthetics.
+- **Multi-website Support**: Track and manage multiple domains from a single account.
 
 ## System Architecture
 
 ```mermaid
 graph TD
-    subgraph Client Side
+    subgraph ClientSide
         Browser[User Browser]
         SDK[Flowlog SDK]
     end
 
-    subgraph "Flowlog App (Next.js)"
-        Ingest[Ingest API (/api/track)]
+    subgraph FlowlogApp
+        Ingest[Ingest API /api/track]
         Dashboard[Admin Dashboard]
     end
 
     subgraph External
-        Geo[IP-API (Geolocation)]
+        Geo[IP Geolocation]
     end
 
     subgraph Storage
-        DB[(PostgreSQL)]
+        DB[PostgreSQL / Prisma]
     end
 
     Browser --> SDK
@@ -42,20 +44,21 @@ graph TD
 
 ## Tech Stack
 
-- **Framework**: Next.js 16+
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS 4.0
-- **Database**: Prisma with PostgreSQL
-- **Authentication**: Better-Auth
-- **Animations**: Framer Motion
-- **Icons**: Lucide React
+- **Framework**: [Next.js 16](https://nextjs.org/) (Turbopack)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS 4.0](https://tailwindcss.com/)
+- **Database**: [Prisma](https://www.prisma.io/) with [PostgreSQL](https://www.postgresql.org/)
+- **Authentication**: [Better-Auth](https://better-auth.com/)
+- **Analytics Logic**: [UA-Parser-js](https://github.com/fent/ua-parser-js), [Recharts](https://recharts.org/)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **Package Manager**: [Bun](https://bun.sh/)
 
 ## Getting Started
 
 ### Prerequisites
 
 - [Bun](https://bun.sh) installed on your machine.
-- A PostgreSQL database.
+- A PostgreSQL database (Neon, local, etc.).
 
 ### Installation
 
@@ -75,6 +78,15 @@ graph TD
 3. Set up your environment variables:
    Copy `.env.example` to `.env` and fill in your database and auth credentials.
 
+   ```bash
+   cp .env.example .env
+   ```
+
+   **Required Variables:**
+   - `DATABASE_URL`: Your PostgreSQL connection string.
+   - `BETTER_AUTH_SECRET`: A secure random string for encryption.
+   - `RESEND_API_KEY`: For email verification and notifications.
+
 4. Run database migrations:
 
    ```bash
@@ -82,6 +94,7 @@ graph TD
    ```
 
 5. Start the development server:
+
    ```bash
    bun dev
    ```
