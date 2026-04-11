@@ -58,51 +58,99 @@ graph TD
 
 ## Getting Started
 
-### Prerequisites
+Follow these steps to get a local development environment up and running.
 
-- [Bun](https://bun.sh) installed on your machine.
-- A PostgreSQL database (Neon, local, etc.).
+### 1. Prerequisites
 
-### Installation
+Before you begin, ensure you have the following installed:
 
-1. Clone the repository:
+- [**Bun**](https://bun.sh) (v1.1+ recommended)
+- [**PostgreSQL**](https://www.postgresql.org/) (Local instance or provider like Neon)
+- [**Node.js**](https://nodejs.org/) (LTS version)
 
-   ```bash
-   git clone https://github.com/lwshakib/flowlog-website-tracking.git
-   cd flowlog-website-tracking
-   ```
+### 2. Installation
 
-2. Install dependencies:
+Clone the repository and install dependencies:
 
-   ```bash
-   bun install
-   ```
+```bash
+# Clone the repository
+git clone https://github.com/lwshakib/flowlog-website-tracking.git
 
-3. Set up your environment variables:
-   Copy `.env.example` to `.env` and fill in your database and auth credentials.
+# Navigate to the project directory
+cd flowlog-website-tracking
 
-   ```bash
-   cp .env.example .env
-   ```
+# Install dependencies using Bun
+bun install
+```
 
-   **Required Variables:**
-   - `DATABASE_URL`: Your PostgreSQL connection string.
-   - `BETTER_AUTH_SECRET`: A secure random string for encryption.
-   - `RESEND_API_KEY`: For email verification and notifications.
+### 3. Environment Configuration
 
-4. Run database migrations:
+Copy the example environment file and fill in your credentials:
 
-   ```bash
-   bun db:migrate
-   ```
+```bash
+cp .env.example .env
+```
 
-5. Start the development server:
+Open `.env` and configure the following key areas:
 
-   ```bash
-   bun dev
-   ```
+- **Database**: `DATABASE_URL` (PostgreSQL connection string)
+- **Authentication**: `BETTER_AUTH_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
+- **Email**: `RESEND_API_KEY`
+- **Storage**: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_ENDPOINT`, `AWS_S3_BUCKET_NAME`
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 4. Database Setup
+
+Initialize your database schema and run migrations:
+
+```bash
+bun db:migrate
+```
+
+### 5. Storage Setup
+
+Automatically create your storage bucket (on R2/S3) and configure CORS:
+
+```bash
+# This script creates the bucket and sets the required CORS rules for browser uploads
+bun run bucket:setup
+```
+
+### 6. Development
+
+Start the development server with Hot Module Replacement (HMR):
+
+```bash
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the dashboard.
+
+## Deployment & Production
+
+To build the application for production:
+
+```bash
+# Generate the optimized production build
+bun run build
+
+# Start the production server
+bun start
+```
+
+## How to Update
+
+To keep your local instance up to date with the latest changes:
+
+```bash
+# 1. Pull the latest code
+git pull origin main
+
+# 2. Install any new dependencies
+bun install
+
+# 3. Run any new database migrations
+bun db:migrate
+```
 
 ## Contributing
 
