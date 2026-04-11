@@ -4,7 +4,7 @@ import { createS3Client, requireBucketName, resolveStorageProvider } from "@/lib
 import type { S3Client } from "@aws-sdk/client-s3";
 
 /**
- * Object storage: **Cloudflare R2** or **Amazon S3** (see `S3_PROVIDER` / `lib/s3-client.ts`).
+ * Object storage: **Cloudflare R2** or **Amazon S3** (determined by `AWS_ENDPOINT`; see `lib/s3-client.ts`).
  */
 export class S3Service {
   private client: S3Client | null = null;
