@@ -33,22 +33,26 @@ type UserAvatarProps = {
  * Otherwise shows first letter of name (fallback).
  */
 export function UserAvatar({ image, name, size = "md", className }: UserAvatarProps) {
-  const [signedSrc, setSignedSrc] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
   const isHttp = isPublicHttpImageUrl(image ?? undefined);
+  const [signedSrc, setSignedSrc] = useState<string | null>(null);
+  const [loading, setLoading] = useState(Boolean(image && !isHttp));
+  const [prevImage, setPrevImage] = useState(image);
+
+  // Reset state when the image prop changes to avoid showing old data
+  if (image !== prevImage) {
+    setPrevImage(image);
+    setSignedSrc(null);
+    setLoading(Boolean(image && !isHttp));
+  }
+
   const httpSrc = image && isHttp ? image.trim() : null;
 
   useEffect(() => {
     if (!image || isHttp) {
-      setSignedSrc(null);
-      setLoading(false);
       return;
     }
 
     let cancelled = false;
-    setLoading(true);
-    setSignedSrc(null);
 
     fetch(`/api/s3/signed-url?path=${encodeURIComponent(image)}`, { credentials: "include" })
       .then(async (res) => {
