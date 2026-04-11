@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import Image from "next/image";
 import {
   User,
   Lock,
@@ -39,6 +38,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { authClient, useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
+import { ProfileAvatarUpload } from "@/components/layout/profile-avatar-upload";
 
 /**
  * AccountPage Component
@@ -49,7 +49,7 @@ export default function AccountPage() {
   const router = useRouter(); // Next.js App router hook for programmatic navigation
 
   // Custom hook wrapping Better-Auth client to asynchronously fetch the currently logged in user context
-  const { data: sessionData, isPending } = useSession();
+  const { data: sessionData, isPending, refetch } = useSession();
 
   // Local state tracking which navigation tab on the sidebar is active
   const [activeNav, setActiveNav] = useState("profile");
@@ -450,13 +450,15 @@ export default function AccountPage() {
               className="scroll-mt-20 sm:scroll-mt-24 space-y-6 sm:space-y-8"
             >
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 min-w-0">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 shrink-0 rounded-full bg-muted flex items-center justify-center overflow-hidden border relative">
-                  {user?.image ? (
-                    <Image src={user.image} alt="" fill className="object-cover" sizes="64px" />
-                  ) : (
-                    <User className="w-6 h-6 text-muted-foreground" />
-                  )}
-                </div>
+                <ProfileAvatarUpload
+                  image={user?.image}
+                  name={user?.name}
+                  size="md"
+                  onUploaded={async () => {
+                    await refetch();
+                    router.refresh();
+                  }}
+                />
                 <div className="min-w-0">
                   <h2 className="text-base sm:text-lg font-medium truncate">
                     {user?.name || "User"}

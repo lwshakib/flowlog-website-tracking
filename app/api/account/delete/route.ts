@@ -2,6 +2,8 @@ import { auth } from "@/lib/auth"; // Core better-auth backend validation client
 import { headers } from "next/headers"; // Next.js API for dynamically parsing request headers
 import { NextResponse } from "next/server"; // Next.js uniform response builder
 import prisma from "@/lib/prisma"; // Global Prisma ORM instance
+import { s3Service } from "@/services/s3.services";
+import { isPublicHttpImageUrl } from "@/lib/user-image";
 
 /**
  * DELETE Handler
@@ -21,6 +23,19 @@ export async function DELETE() {
     }
 
     const userId = session.user.id;
+
+    const existing = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { image: true },
+    });
+    const key = existing?.image;
+    if (key && !isPublicHttpImageUrl(key) && key.startsWith(`avatars/${userId}/`)) {
+      try {
+        await s3Service.deleteObject(key);
+      } catch (e) {
+        console.error("S3 avatar delete (best effort):", e);
+      }
+    }
 
     // Directly execute a destructive delete mapped to the user's primary ID using Prisma.
     // NOTE: Prisma will handle referential integrity and perform a cascade deletion of
