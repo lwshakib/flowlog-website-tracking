@@ -11,16 +11,16 @@ import { notFound, redirect } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Clock, BarChart3, MapPin, Monitor, Globe2, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { EditWebsiteDialog } from "@/components/edit-website-dialog";
-import { DeleteWebsiteDialog } from "@/components/delete-website-dialog";
+import { EditWebsiteDialog } from "@/components/websites/edit-website-dialog";
+import { DeleteWebsiteDialog } from "@/components/websites/delete-website-dialog";
 import {
   BrowserDistributionChart,
   TopPagesBarChart,
   VisitsTrendChart,
-} from "@/components/analytics-charts";
-import { ExportButton } from "@/components/export-button";
+} from "@/components/websites/analytics-charts";
+import { ExportButton } from "@/components/websites/export-button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { StatsList } from "@/components/stats-list";
+import { StatsList } from "@/components/websites/stats-list";
 import { format, subDays, subMinutes } from "date-fns";
 
 /**

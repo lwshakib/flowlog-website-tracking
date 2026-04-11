@@ -1,5 +1,5 @@
-import { Logo } from "@/components/logo";
-import { ForgotPasswordForm } from "@/components/forgot-password-form";
+import { Logo } from "@/components/layout/logo";
+import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
 import Image from "next/image";
 
 export default function ForgotPasswordPage() {

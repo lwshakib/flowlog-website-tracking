@@ -1,7 +1,7 @@
 "use client";
 
-import { EditWebsiteDialog } from "@/components/edit-website-dialog";
-import { DeleteWebsiteDialog } from "@/components/delete-website-dialog";
+import { EditWebsiteDialog } from "./edit-website-dialog";
+import { DeleteWebsiteDialog } from "./delete-website-dialog";
 import { ArrowUpRight } from "lucide-react";
 
 interface Website {

@@ -1,5 +1,5 @@
-import { Logo } from "@/components/logo";
-import { ResetPasswordForm } from "@/components/reset-password-form";
+import { Logo } from "@/components/layout/logo";
+import { ResetPasswordForm } from "@/components/auth/reset-password-form";
 import Image from "next/image";
 
 export default function ResetPasswordPage() {

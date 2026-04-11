@@ -10,10 +10,10 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Globe, Users, MousePointer2, Clock, TrendingUp } from "lucide-react";
-import { CreateWebsiteDialog } from "@/components/create-website-dialog";
-import { WebsiteCardActions } from "@/components/website-card-actions";
+import { CreateWebsiteDialog } from "@/components/websites/create-website-dialog";
+import { WebsiteCardActions } from "@/components/websites/website-card-actions";
 import Link from "next/link";
-import { VisitsTrendChart } from "@/components/analytics-charts";
+import { VisitsTrendChart } from "@/components/websites/analytics-charts";
 import { subDays, format, subMinutes } from "date-fns";
 
 /**

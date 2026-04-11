@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { Input } from "@/components/ui/input";
 import { Github, Linkedin, Twitter, Moon, Sun, ArrowDownLeft, MessageCircle } from "lucide-react";
-import { Logo } from "./logo";
+import { Logo } from "@/components/layout/logo";
 
 const data = () => ({
   navigation: {

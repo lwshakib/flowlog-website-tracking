@@ -4,12 +4,12 @@
  * This page assembles various sections like Hero, Features, Pricing, and CTA to create the homepage.
  */
 
-import AboutSection from "@/components/about-section";
-import CTASection from "@/components/cta-section";
-import FeaturesSection from "@/components/features-section";
-import FooterSection from "@/components/footer";
-import HeroSection from "@/components/hero-section";
-import SimplePricing from "@/components/pricing";
+import AboutSection from "@/components/marketing/about-section";
+import CTASection from "@/components/marketing/cta-section";
+import FeaturesSection from "@/components/marketing/features-section";
+import FooterSection from "@/components/marketing/footer";
+import HeroSection from "@/components/marketing/hero-section";
+import SimplePricing from "@/components/marketing/pricing";
 
 /**
  * Home Component

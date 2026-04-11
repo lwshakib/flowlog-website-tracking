@@ -4,8 +4,8 @@
  * Provides the interface for new users to create an account.
  */
 
-import { Logo } from "@/components/logo";
-import { SignUpForm } from "@/components/signup-form";
+import { Logo } from "@/components/layout/logo";
+import { SignUpForm } from "@/components/auth/signup-form";
 import Image from "next/image";
 
 /**

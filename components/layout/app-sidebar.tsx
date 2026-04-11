@@ -26,7 +26,7 @@ import {
   SidebarGroupLabel,
   SidebarGroupContent,
 } from "@/components/ui/sidebar";
-import { LogoIcon } from "@/components/logo";
+import { LogoIcon } from "./logo";
 import { useSidebar } from "@/components/ui/sidebar";
 import {
   DropdownMenu,

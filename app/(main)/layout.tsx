@@ -5,13 +5,13 @@
  */
 
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/layout/app-sidebar";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
-import { LogoIcon } from "@/components/logo";
-import { DynamicBreadcrumb } from "@/components/dynamic-breadcrumb";
+import { LogoIcon } from "@/components/layout/logo";
+import { DynamicBreadcrumb } from "@/components/layout/dynamic-breadcrumb";
 import { Separator } from "@/components/ui/separator";
 
 /**
