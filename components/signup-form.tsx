@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,17 +13,17 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
-import { Loader2 } from "lucide-react";
+import { Loader2, MailCheck } from "lucide-react";
 import Image from "next/image";
 
 export function SignUpForm({ className, ...props }: React.ComponentProps<"form">) {
-  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [socialLoading, setSocialLoading] = useState<string | null>(null);
+  const [awaitingVerification, setAwaitingVerification] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +35,7 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
         email,
         password,
         name,
-        callbackURL: `${window.location.origin}/verify-email?verified=true`,
+        callbackURL: `${window.location.origin}/sign-in`,
       });
 
       if (error) {
@@ -45,8 +44,8 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
         return;
       }
 
-      // Redirect to verify-email page
-      router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+      setAwaitingVerification(true);
+      setIsLoading(false);
     } catch {
       setError("An unexpected error occurred");
       setIsLoading(false);
@@ -65,6 +64,35 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<"form">
       setSocialLoading(null);
     }
   };
+
+  if (awaitingVerification) {
+    return (
+      <div className={cn("flex flex-col gap-6 text-center", className)}>
+        <div className="flex flex-col items-center gap-2">
+          <div className="rounded-full bg-primary/10 p-3">
+            <MailCheck className="size-6 text-primary" />
+          </div>
+          <h1 className="text-2xl font-bold">Check your email</h1>
+          <p className="text-muted-foreground text-sm text-balance">
+            We&apos;ve sent a verification link to{" "}
+            <span className="font-medium text-foreground">{email}</span>. Open your inbox (for
+            example Gmail), click the link, and you&apos;ll be taken to sign in once your email is
+            verified.
+          </p>
+        </div>
+        <div className="flex flex-col gap-2">
+          <Button asChild variant="outline" className="w-full">
+            <Link href="https://mail.google.com" target="_blank" rel="noopener noreferrer">
+              Open Gmail
+            </Link>
+          </Button>
+          <Button asChild variant="ghost" className="w-full">
+            <Link href="/sign-in">Back to sign in</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <form className={cn("flex flex-col gap-6", className)} onSubmit={handleSubmit} {...props}>

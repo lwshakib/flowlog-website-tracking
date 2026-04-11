@@ -20,7 +20,6 @@ export const authRoutes = [
   "/sign-up",
   "/forgot-password",
   "/reset-password",
-  "/verify-email",
 ];
 
 /**

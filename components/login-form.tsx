@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
-import { Loader2 } from "lucide-react";
+import { Loader2, MailCheck } from "lucide-react";
 import Image from "next/image";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"form">) {
@@ -26,11 +26,13 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
   const [socialLoading, setSocialLoading] = useState<string | null>(null);
 
   const [isUnverified, setIsUnverified] = useState(false);
+  const [verificationSent, setVerificationSent] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setIsUnverified(false);
+    setVerificationSent(false);
     setIsLoading(true);
 
     try {
@@ -59,14 +61,22 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
   };
 
   const handleResendVerification = async () => {
+    setError("");
+    setVerificationSent(false);
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      await authClient.sendVerificationEmail({
+      const { error } = await authClient.sendVerificationEmail({
         email,
-        callbackURL: `${window.location.origin}/verify-email?verified=true`,
+        callbackURL: `${window.location.origin}/sign-in`,
       });
+      if (error) {
+        setError(error.message || "Failed to resend verification email");
+        setIsLoading(false);
+        return;
+      }
+      setIsUnverified(false);
+      setVerificationSent(true);
       setIsLoading(false);
-      router.push(`/verify-email?email=${encodeURIComponent(email)}`);
     } catch {
       setError("Failed to resend verification email");
       setIsLoading(false);
@@ -95,6 +105,21 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
             Enter your email below to login to your account
           </p>
         </div>
+
+        {verificationSent && (
+          <div className="bg-primary/10 text-foreground text-sm p-3 rounded-md text-center flex flex-col gap-3 items-center">
+            <MailCheck className="size-5 text-primary shrink-0" aria-hidden />
+            <span>
+              We sent a new link to <span className="font-medium">{email}</span>. Check your inbox
+              and click the link—you&apos;ll return here once verification completes.
+            </span>
+            <Button asChild variant="outline" size="sm" className="w-full sm:w-auto">
+              <Link href="https://mail.google.com" target="_blank" rel="noopener noreferrer">
+                Open Gmail
+              </Link>
+            </Button>
+          </div>
+        )}
 
         {error && (
           <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-md text-center flex flex-col gap-2 items-center">
