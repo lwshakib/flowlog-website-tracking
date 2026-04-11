@@ -358,63 +358,73 @@ export default function AccountPage() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto scroll-smooth">
-      <div className="max-w-5xl mx-auto py-8 sm:py-16 px-4 sm:px-6">
+    <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden scroll-smooth">
+      <div className="max-w-5xl mx-auto py-6 sm:py-12 lg:py-16 px-4 sm:px-6 w-full min-w-0">
         {/* Top contextual header block explaining the purpose of this page. */}
-        <header className="mb-10 sm:mb-16">
-          <h1 className="text-2xl font-semibold">Account Settings</h1>
-          <p className="text-sm text-muted-foreground mt-1">
+        <header className="mb-8 sm:mb-12 lg:mb-16">
+          <h1 className="text-xl sm:text-2xl font-semibold text-balance">Account Settings</h1>
+          <p className="text-sm text-muted-foreground mt-1 text-pretty max-w-prose">
             Manage your profile, password, connected accounts, and active sessions.
           </p>
         </header>
 
-        <div className="flex flex-col lg:flex-row gap-10 sm:gap-16">
-          {/* Sidebar Nav: Sticky positioning anchors it visibly alongside the main scrollable settings */}
-          <aside className="w-full lg:w-48 lg:sticky lg:top-24 space-y-1">
-            <NavBtn
-              active={activeNav === "profile"}
-              onClick={() => scrollToSection("profile")}
-              icon={User}
-              label="Profile"
-            />
-            <NavBtn
-              active={activeNav === "security"}
-              onClick={() => scrollToSection("security")}
-              icon={Lock}
-              label="Security"
-            />
-            <NavBtn
-              active={activeNav === "connections"}
-              onClick={() => scrollToSection("connections")}
-              icon={Link2}
-              label="Connections"
-            />
-            <NavBtn
-              active={activeNav === "sessions"}
-              onClick={() => scrollToSection("sessions")}
-              icon={Shield}
-              label="Sessions"
-            />
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 xl:gap-16 min-w-0">
+          {/* Nav: horizontal scroll on small screens, sticky column on large */}
+          <aside className="w-full min-w-0 lg:w-48 lg:shrink-0 lg:sticky lg:top-20 lg:self-start z-10 bg-background lg:bg-transparent pb-2 lg:pb-0">
+            <nav
+              className="flex flex-row lg:flex-col gap-1 overflow-x-auto overflow-y-visible py-1 -mx-1 px-1 sm:mx-0 sm:px-0 lg:overflow-visible [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              aria-label="Account sections"
+            >
+              <NavBtn
+                active={activeNav === "profile"}
+                onClick={() => scrollToSection("profile")}
+                icon={User}
+                label="Profile"
+              />
+              <NavBtn
+                active={activeNav === "security"}
+                onClick={() => scrollToSection("security")}
+                icon={Lock}
+                label="Security"
+              />
+              <NavBtn
+                active={activeNav === "connections"}
+                onClick={() => scrollToSection("connections")}
+                icon={Link2}
+                label="Connections"
+              />
+              <NavBtn
+                active={activeNav === "sessions"}
+                onClick={() => scrollToSection("sessions")}
+                icon={Shield}
+                label="Sessions"
+              />
+            </nav>
 
-            {/* Split out boundary for destructive actions containing an Alert Dialogue wrapping Sign Out */}
-            <div className="pt-4 mt-4 border-t border-border space-y-1">
+            <div className="mt-3 pt-3 border-t border-border flex flex-row lg:flex-col gap-1 overflow-x-auto overflow-y-visible lg:overflow-visible [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <button className="w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors text-muted-foreground hover:bg-muted/50 hover:text-foreground">
-                    <LogOut className="w-4 h-4" />
+                  <button
+                    type="button"
+                    className="shrink-0 lg:w-full flex items-center gap-3 px-3 py-2.5 min-h-11 lg:min-h-0 lg:py-2 text-sm rounded-md transition-colors text-muted-foreground hover:bg-muted/50 hover:text-foreground whitespace-nowrap"
+                  >
+                    <LogOut className="w-4 h-4 shrink-0" />
                     Sign Out
                   </button>
                 </AlertDialogTrigger>
-                <AlertDialogContent className="rounded-2xl">
+                <AlertDialogContent className="rounded-2xl max-w-[calc(100vw-2rem)] sm:max-w-lg">
                   <AlertDialogHeader>
                     <AlertDialogTitle>Sign Out</AlertDialogTitle>
                     <AlertDialogDescription>
                       Are you sure you want to sign out of your account?
                     </AlertDialogDescription>
                   </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleSignOut} className="rounded-xl">
+                  <AlertDialogFooter className="flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                    <AlertDialogCancel className="rounded-xl w-full sm:w-auto mt-0">Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleSignOut}
+                      className="rounded-xl w-full sm:w-auto"
+                    >
                       Sign Out
                     </AlertDialogAction>
                   </AlertDialogFooter>
@@ -432,42 +442,52 @@ export default function AccountPage() {
           </aside>
 
           {/* Main List content: Each section is tracked using dynamic Refs for smooth scrolling */}
-          <main className="flex-1 space-y-20">
+          <main className="flex-1 min-w-0 space-y-12 sm:space-y-16 lg:space-y-20">
             {/* =============== PROFILE SECTION =============== */}
-            <section ref={profileRef} id="profile" className="scroll-mt-24 space-y-8">
-              <div className="flex items-center gap-6">
-                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center overflow-hidden border relative">
+            <section
+              ref={profileRef}
+              id="profile"
+              className="scroll-mt-20 sm:scroll-mt-24 space-y-6 sm:space-y-8"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 min-w-0">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 shrink-0 rounded-full bg-muted flex items-center justify-center overflow-hidden border relative">
                   {user?.image ? (
-                    // Load the highly optimized Next.js image wrapper if OAuth profile photo exists
-                    <Image src={user.image} alt="" fill className="object-cover" />
+                    <Image src={user.image} alt="" fill className="object-cover" sizes="64px" />
                   ) : (
-                    // Fall back to simple standard icon
                     <User className="w-6 h-6 text-muted-foreground" />
                   )}
                 </div>
-                <div>
-                  <h2 className="text-lg font-medium">{user?.name || "User"}</h2>
+                <div className="min-w-0">
+                  <h2 className="text-base sm:text-lg font-medium truncate">
+                    {user?.name || "User"}
+                  </h2>
                   <p className="text-xs text-muted-foreground">
                     Joined in{" "}
-                    {/* Reliably formats database timestamps into highly readable format */}
                     {user?.createdAt ? format(new Date(user.createdAt), "MMMM yyyy") : "2024"}
                   </p>
                 </div>
               </div>
 
-              <div className="grid gap-6 max-w-xl">
-                <div className="space-y-2">
+              <div className="grid gap-5 sm:gap-6 w-full max-w-xl">
+                <div className="space-y-2 min-w-0">
                   <Label htmlFor="display-name" className="text-xs text-muted-foreground">
                     Full Name
                   </Label>
-                  <Input id="display-name" defaultValue={user?.name || ""} className="max-w-md" />
+                  <Input
+                    id="display-name"
+                    defaultValue={user?.name || ""}
+                    className="w-full max-w-full sm:max-w-md"
+                  />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2 min-w-0">
                   <Label className="text-xs text-muted-foreground">Email Address</Label>
-                  {/* Email address input visually locked out since direct auth mutation is restricted */}
-                  <Input value={user?.email || ""} disabled className="max-w-md opacity-60" />
+                  <Input
+                    value={user?.email || ""}
+                    disabled
+                    className="w-full max-w-full sm:max-w-md opacity-60"
+                  />
                 </div>
-                <Button onClick={handleUpdateProfile} variant="default" className="w-fit">
+                <Button onClick={handleUpdateProfile} variant="default" className="w-full sm:w-fit">
                   Save Changes
                 </Button>
               </div>
@@ -476,18 +496,21 @@ export default function AccountPage() {
             <Separator />
 
             {/* =============== SECURITY SECTION =============== */}
-            <section ref={securityRef} id="security" className="scroll-mt-24 space-y-8">
-              <div>
-                <h2 className="text-lg font-medium">Security</h2>
-                <p className="text-sm text-muted-foreground mt-1">
+            <section
+              ref={securityRef}
+              id="security"
+              className="scroll-mt-20 sm:scroll-mt-24 space-y-6 sm:space-y-8"
+            >
+              <div className="min-w-0">
+                <h2 className="text-base sm:text-lg font-medium">Security</h2>
+                <p className="text-sm text-muted-foreground mt-1 text-pretty max-w-prose">
                   Control your password and authentication settings.
                 </p>
               </div>
 
-              {/* Password modification interactions */}
-              <div className="grid gap-6 max-w-xl">
+              <div className="grid gap-6 w-full max-w-xl">
                 <form onSubmit={handleUpdatePassword} className="space-y-4">
-                  <div className="space-y-2">
+                  <div className="space-y-2 min-w-0">
                     <Label htmlFor="current-password" className="text-xs text-muted-foreground">
                       Current Password
                     </Label>
@@ -495,13 +518,13 @@ export default function AccountPage() {
                       id="current-password"
                       type="password"
                       placeholder="••••••••"
-                      className="max-w-md"
+                      className="w-full max-w-full sm:max-w-md"
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
                       disabled={isUpdatingPassword}
                     />
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-2 min-w-0">
                     <Label htmlFor="new-password" className="text-xs text-muted-foreground">
                       New Password
                     </Label>
@@ -509,13 +532,13 @@ export default function AccountPage() {
                       id="new-password"
                       type="password"
                       placeholder="••••••••"
-                      className="max-w-md"
+                      className="w-full max-w-full sm:max-w-md"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       disabled={isUpdatingPassword}
                     />
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-2 min-w-0">
                     <Label htmlFor="confirm-password" className="text-xs text-muted-foreground">
                       Confirm Password
                     </Label>
@@ -523,7 +546,7 @@ export default function AccountPage() {
                       id="confirm-password"
                       type="password"
                       placeholder="••••••••"
-                      className="max-w-md"
+                      className="w-full max-w-full sm:max-w-md"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       disabled={isUpdatingPassword}
@@ -532,7 +555,7 @@ export default function AccountPage() {
                   <Button
                     type="submit"
                     variant="outline"
-                    className="w-fit"
+                    className="w-full sm:w-fit"
                     disabled={isUpdatingPassword}
                   >
                     {isUpdatingPassword ? (
@@ -551,28 +574,32 @@ export default function AccountPage() {
             <Separator />
 
             {/* =============== CONNECTED ACCOUNTS =============== */}
-            <section ref={connectionsRef} id="connections" className="scroll-mt-24 space-y-8">
-              <div>
-                <h2 className="text-lg font-medium">Connected accounts</h2>
-                <p className="text-sm text-muted-foreground mt-1">
+            <section
+              ref={connectionsRef}
+              id="connections"
+              className="scroll-mt-20 sm:scroll-mt-24 space-y-6 sm:space-y-8 min-w-0"
+            >
+              <div className="min-w-0">
+                <h2 className="text-base sm:text-lg font-medium">Connected accounts</h2>
+                <p className="text-sm text-muted-foreground mt-1 text-pretty max-w-prose">
                   Link Google to sign in faster, or use email and password as your primary sign-in.
                 </p>
               </div>
 
-              <div className="border border-border/60 rounded-xl overflow-hidden divide-y divide-border/60">
+              <div className="border border-border/60 rounded-xl overflow-hidden divide-y divide-border/60 min-w-0">
                 {isAccountsPending ? (
-                  <div className="p-4 flex items-center gap-4">
-                    <Skeleton className="w-10 h-10 rounded-lg" />
-                    <div className="space-y-2 flex-1">
-                      <Skeleton className="h-4 w-40" />
-                      <Skeleton className="h-3 w-56" />
+                  <div className="p-4 flex flex-col sm:flex-row sm:items-center gap-4">
+                    <Skeleton className="w-10 h-10 rounded-lg shrink-0" />
+                    <div className="space-y-2 flex-1 min-w-0">
+                      <Skeleton className="h-4 w-40 max-w-full" />
+                      <Skeleton className="h-3 w-56 max-w-full" />
                     </div>
-                    <Skeleton className="h-8 w-24" />
+                    <Skeleton className="h-8 w-full sm:w-24 shrink-0" />
                   </div>
                 ) : (
                   <>
-                    <div className="p-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between transition-colors hover:bg-muted/10">
-                      <div className="flex items-center gap-4 min-w-0">
+                    <div className="p-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between transition-colors hover:bg-muted/10 min-w-0">
+                      <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
                         <div className="p-2.5 rounded-lg bg-muted shrink-0">
                           <Globe className="w-5 h-5 text-muted-foreground" />
                         </div>
@@ -581,16 +608,16 @@ export default function AccountPage() {
                           <p className="text-xs text-muted-foreground">Social sign-in</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 shrink-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto sm:shrink-0">
                         {isGoogleLinked ? (
                           <>
-                            <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground bg-muted px-2 py-1 rounded">
+                            <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground bg-muted px-2 py-1 rounded w-fit">
                               Connected
                             </span>
                             <Button
                               variant="outline"
                               size="sm"
-                              className="h-8 text-xs text-destructive hover:bg-destructive/10"
+                              className="h-9 sm:h-8 text-xs text-destructive hover:bg-destructive/10 w-full sm:w-auto justify-center"
                               onClick={() => handleUnlinkAccount("google")}
                             >
                               <Unlink className="w-3.5 h-3.5 mr-1.5" />
@@ -601,7 +628,7 @@ export default function AccountPage() {
                           <Button
                             variant="secondary"
                             size="sm"
-                            className="h-8 text-xs"
+                            className="h-9 sm:h-8 text-xs w-full sm:w-auto justify-center"
                             onClick={() => handleLinkSocial("google")}
                           >
                             <LinkIcon className="w-3.5 h-3.5 mr-1.5" />
@@ -610,17 +637,17 @@ export default function AccountPage() {
                         )}
                       </div>
                     </div>
-                    <div className="p-4 flex items-center justify-between bg-muted/20">
-                      <div className="flex items-center gap-4 min-w-0">
+                    <div className="p-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-muted/20 min-w-0">
+                      <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                         <div className="p-2.5 rounded-lg bg-background border shrink-0">
                           <Mail className="w-5 h-5 text-muted-foreground" />
                         </div>
-                        <div>
+                        <div className="min-w-0">
                           <p className="text-sm font-medium">Email &amp; password</p>
                           <p className="text-xs text-muted-foreground">Primary credentials</p>
                         </div>
                       </div>
-                      <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground bg-muted px-2 py-1 rounded shrink-0">
+                      <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground bg-muted px-2 py-1 rounded shrink-0 w-fit sm:ml-auto">
                         Primary
                       </span>
                     </div>
@@ -632,23 +659,29 @@ export default function AccountPage() {
             <Separator />
 
             {/* =============== SESSIONS SECTION =============== */}
-            <section ref={sessionsRef} id="sessions" className="scroll-mt-24 space-y-8">
-              <div>
-                <h2 className="text-lg font-medium">Active Sessions</h2>
-                <p className="text-sm text-muted-foreground mt-1">
+            <section
+              ref={sessionsRef}
+              id="sessions"
+              className="scroll-mt-20 sm:scroll-mt-24 space-y-6 sm:space-y-8 min-w-0"
+            >
+              <div className="min-w-0">
+                <h2 className="text-base sm:text-lg font-medium">Active Sessions</h2>
+                <p className="text-sm text-muted-foreground mt-1 text-pretty max-w-prose">
                   Devices currently connected to your account.
                 </p>
               </div>
 
-              <div className="border border-border/60 rounded-xl overflow-hidden divide-y divide-border/60">
+              <div className="border border-border/60 rounded-xl overflow-hidden divide-y divide-border/60 min-w-0">
                 {isSessionsPending ? (
                   <div className="divide-y divide-border/60">
                     {[1, 2, 3].map((i) => (
-                      <div key={i} className="p-4 flex items-center gap-4">
-                        <Skeleton className="w-5 h-5 rounded-full" />
-                        <div className="space-y-2 flex-1">
-                          <Skeleton className="h-4 w-1/3" />
-                          <Skeleton className="h-3 w-1/4" />
+                      <div key={i} className="p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+                        <div className="flex items-center gap-4 flex-1 min-w-0">
+                          <Skeleton className="w-5 h-5 rounded-full shrink-0" />
+                          <div className="space-y-2 flex-1 min-w-0">
+                            <Skeleton className="h-4 w-2/3 max-w-xs" />
+                            <Skeleton className="h-3 w-1/2 max-w-[200px]" />
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -662,19 +695,19 @@ export default function AccountPage() {
                       <div
                         key={row.token || row.id}
                         className={cn(
-                          "p-4 flex items-center justify-between transition-colors",
+                          "p-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between transition-colors min-w-0",
                           isCurrent ? "bg-muted/30" : "hover:bg-muted/10"
                         )}
                       >
-                        <div className="flex items-center gap-4 min-w-0">
+                        <div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0 flex-1">
                           {isMobile ? (
-                            <Smartphone className="w-5 h-5 text-muted-foreground shrink-0" />
+                            <Smartphone className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5 sm:mt-0" />
                           ) : (
-                            <Monitor className="w-5 h-5 text-muted-foreground shrink-0" />
+                            <Monitor className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5 sm:mt-0" />
                           )}
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <p className="text-sm font-medium truncate">
+                          <div className="min-w-0 flex-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <p className="text-sm font-medium min-w-0 wrap-break-word">
                                 {row.userAgent || "Unknown device"}
                               </p>
                               {isCurrent && (
@@ -683,7 +716,7 @@ export default function AccountPage() {
                                 </span>
                               )}
                             </div>
-                            <p className="text-[11px] text-muted-foreground leading-none mt-1 truncate">
+                            <p className="text-[11px] text-muted-foreground mt-1 min-w-0 wrap-break-word leading-snug">
                               {row.ipAddress || "Unknown IP"} •{" "}
                               {format(new Date(row.updatedAt), "MMM d, h:mm a")}
                             </p>
@@ -694,18 +727,18 @@ export default function AccountPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="text-xs h-8 text-muted-foreground hover:text-destructive shrink-0"
+                            className="text-xs h-9 sm:h-8 text-muted-foreground hover:text-destructive shrink-0 self-end sm:self-auto w-full sm:w-auto justify-center sm:justify-start"
                             onClick={() => handleRevokeSession(row.token)}
                           >
                             <Trash2 className="w-4 h-4 sm:mr-1" />
-                            <span className="hidden sm:inline">Revoke</span>
+                            <span className="sm:inline">Revoke</span>
                           </Button>
                         )}
                       </div>
                     );
                   })
                 ) : (
-                  <div className="p-8 text-center text-sm text-muted-foreground">
+                  <div className="p-6 sm:p-8 text-center text-sm text-muted-foreground px-4">
                     No active sessions found.
                   </div>
                 )}
@@ -715,27 +748,26 @@ export default function AccountPage() {
             <Separator />
 
             {/* =============== DANGER ZONE SECTION =============== */}
-            <section ref={dangerRef} id="danger" className="scroll-mt-24 pt-8">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 border border-destructive/20 rounded-xl bg-destructive/[0.02]">
-                <div className="space-y-1.5">
-                  <h2 className="text-lg font-semibold text-destructive flex items-center gap-2">
-                    <AlertTriangle className="w-5 h-5" />
+            <section ref={dangerRef} id="danger" className="scroll-mt-20 sm:scroll-mt-24 pt-6 sm:pt-8 min-w-0">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6 p-4 sm:p-6 border border-destructive/20 rounded-xl bg-destructive/2 min-w-0">
+                <div className="space-y-1.5 min-w-0">
+                  <h2 className="text-base sm:text-lg font-semibold text-destructive flex flex-wrap items-center gap-2">
+                    <AlertTriangle className="w-5 h-5 shrink-0" />
                     Delete Account
                   </h2>
-                  <p className="text-sm text-muted-foreground max-w-md">
+                  <p className="text-sm text-muted-foreground max-w-md text-pretty">
                     Permanently delete your profile, tools, and all associated data. This action is
                     irreversible.
                   </p>
                 </div>
 
-                {/* Second Alert Dialog wrapper ensuring multiple manual confirmations required before fully stripping the database */}
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="destructive" className="px-8 shadow-sm">
+                    <Button variant="destructive" className="w-full md:w-auto px-6 sm:px-8 shadow-sm shrink-0">
                       Delete Account
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent className="rounded-2xl">
+                  <AlertDialogContent className="rounded-2xl max-w-[calc(100vw-2rem)] sm:max-w-lg">
                     <AlertDialogHeader className="space-y-3">
                       <AlertDialogTitle className="text-xl">
                         Are you absolutely sure?
@@ -745,11 +777,13 @@ export default function AccountPage() {
                         This action cannot be undone.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter className="mt-4 gap-2">
-                      <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
+                    <AlertDialogFooter className="mt-4 flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                      <AlertDialogCancel className="rounded-xl w-full sm:w-auto mt-0">
+                        Cancel
+                      </AlertDialogCancel>
                       <AlertDialogAction
                         onClick={handleDeleteAccount}
-                        className="bg-destructive hover:bg-destructive/90 rounded-xl px-6"
+                        className="bg-destructive hover:bg-destructive/90 rounded-xl px-6 w-full sm:w-auto"
                       >
                         {isDeleting ? (
                           <span className="flex items-center gap-2">
@@ -782,25 +816,26 @@ function NavBtn({
   label,
   danger = false,
 }: {
-  active: boolean; // Triggers highlight background modifications
+  active: boolean;
   onClick: () => void;
-  icon: React.ElementType; // The Lucide component to render
-  label: string; // Internal rendered readable name
-  danger?: boolean; // Toggles the red UI warning state
+  icon: React.ElementType;
+  label: string;
+  danger?: boolean;
 }) {
   return (
     <button
+      type="button"
       onClick={onClick}
       className={cn(
-        "w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors",
+        "shrink-0 lg:w-full flex items-center gap-2 sm:gap-3 px-3 py-2.5 min-h-11 lg:min-h-0 lg:py-2 text-sm rounded-md transition-colors whitespace-nowrap touch-manipulation",
         active
           ? danger
-            ? "bg-red-50 text-red-600 font-medium"
+            ? "bg-red-50 text-red-600 font-medium dark:bg-red-950/50 dark:text-red-400"
             : "bg-muted text-foreground font-medium"
           : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
       )}
     >
-      <Icon className="w-4 h-4" />
+      <Icon className="w-4 h-4 shrink-0" aria-hidden />
       {label}
     </button>
   );
