@@ -715,11 +715,7 @@ export default function AccountPage() {
             <Separator />
 
             {/* =============== DANGER ZONE SECTION =============== */}
-            <section
-              ref={dangerRef}
-              id="danger"
-              className="scroll-mt-24 pt-8 border-t border-border"
-            >
+            <section ref={dangerRef} id="danger" className="scroll-mt-24 pt-8">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 border border-destructive/20 rounded-xl bg-destructive/[0.02]">
                 <div className="space-y-1.5">
                   <h2 className="text-lg font-semibold text-destructive flex items-center gap-2">
