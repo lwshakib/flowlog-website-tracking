@@ -34,7 +34,7 @@ export default function SignInPage() {
       {/* Right Column: Decorative Background Image (Visible on large screens) */}
       <div className="bg-muted relative hidden lg:block">
         <Image
-          src="/signin-bg.png"
+          src="/images/auth/signin-bg.png"
           alt="Sign In Background"
           fill
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"

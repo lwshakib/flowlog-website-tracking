@@ -1,4 +1,4 @@
-# <img src="public/logo.svg" width="32" align="center"> Flowlog
+# <img src="public/brand/logo.svg" width="32" align="center"> Flowlog
 
 Understand Every Click. Optimize Every Flow.
 

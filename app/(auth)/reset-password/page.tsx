@@ -7,7 +7,7 @@ export default function ResetPasswordPage() {
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="bg-muted relative hidden lg:block">
         <Image
-          src="/reset-password-bg.png"
+          src="/images/auth/reset-password-bg.png"
           alt="Reset Password Background"
           fill
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"

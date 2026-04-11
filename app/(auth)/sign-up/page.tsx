@@ -19,7 +19,7 @@ export default function SignUpPage() {
       {/* Left Column: Decorative Background Image (Visible on large screens) */}
       <div className="bg-muted relative hidden lg:block">
         <Image
-          src="/signup-bg.png"
+          src="/images/auth/signup-bg.png"
           alt="Sign Up Background"
           fill
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"

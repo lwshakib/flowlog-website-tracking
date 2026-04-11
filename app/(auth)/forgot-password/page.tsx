@@ -7,7 +7,7 @@ export default function ForgotPasswordPage() {
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="bg-muted relative hidden lg:block">
         <Image
-          src="/forgot-password-bg.png"
+          src="/images/auth/forgot-password-bg.png"
           alt="Forgot Password Background"
           fill
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"

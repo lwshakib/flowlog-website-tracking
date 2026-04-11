@@ -18,14 +18,14 @@ export default function AboutSection() {
               <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full transition-all duration-500 group-hover:bg-primary/30" />
               <div className="relative rounded-2xl border border-border/50 shadow-2xl overflow-hidden bg-background">
                 <Image
-                  src="/dark.png"
+                  src="/images/marketing/dark.png"
                   alt="FlowLog Analytics Dashboard"
                   width={2700}
                   height={1440}
                   className="w-full h-auto hidden dark:block"
                 />
                 <Image
-                  src="/light.png"
+                  src="/images/marketing/light.png"
                   alt="FlowLog Analytics Dashboard"
                   width={2700}
                   height={1440}
