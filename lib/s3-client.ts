@@ -31,7 +31,9 @@ export function createS3Client(): S3Client {
   if (provider === "r2") {
     const endpoint = process.env.AWS_ENDPOINT?.trim();
     if (!endpoint) {
-      throw new Error('For S3_PROVIDER=r2 (or when AWS_ENDPOINT is set), set AWS_ENDPOINT to your R2 S3 API URL.');
+      throw new Error(
+        "For S3_PROVIDER=r2 (or when AWS_ENDPOINT is set), set AWS_ENDPOINT to your R2 S3 API URL."
+      );
     }
     return new S3Client({
       region: process.env.AWS_REGION?.trim() || "auto",

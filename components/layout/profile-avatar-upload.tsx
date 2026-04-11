@@ -121,11 +121,7 @@ export function ProfileAvatarUpload({
         )}
         aria-label="Upload profile photo"
       >
-        {uploading ? (
-          <Loader2 className="size-6 animate-spin" />
-        ) : (
-          <Camera className="size-6" />
-        )}
+        {uploading ? <Loader2 className="size-6 animate-spin" /> : <Camera className="size-6" />}
       </button>
 
       <input

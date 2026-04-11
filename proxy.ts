@@ -15,12 +15,7 @@ export const publicRoutes = ["/", "/api/track"];
  * These routes will redirect logged in users to /
  * @type {string[]}
  */
-export const authRoutes = [
-  "/sign-in",
-  "/sign-up",
-  "/forgot-password",
-  "/reset-password",
-];
+export const authRoutes = ["/sign-in", "/sign-up", "/forgot-password", "/reset-password"];
 
 /**
  * The prefix for API authentication routes

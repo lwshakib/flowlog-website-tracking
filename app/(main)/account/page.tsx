@@ -420,7 +420,9 @@ export default function AccountPage() {
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter className="flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-                    <AlertDialogCancel className="rounded-xl w-full sm:w-auto mt-0">Cancel</AlertDialogCancel>
+                    <AlertDialogCancel className="rounded-xl w-full sm:w-auto mt-0">
+                      Cancel
+                    </AlertDialogCancel>
                     <AlertDialogAction
                       onClick={handleSignOut}
                       className="rounded-xl w-full sm:w-auto"
@@ -750,7 +752,11 @@ export default function AccountPage() {
             <Separator />
 
             {/* =============== DANGER ZONE SECTION =============== */}
-            <section ref={dangerRef} id="danger" className="scroll-mt-20 sm:scroll-mt-24 pt-6 sm:pt-8 min-w-0">
+            <section
+              ref={dangerRef}
+              id="danger"
+              className="scroll-mt-20 sm:scroll-mt-24 pt-6 sm:pt-8 min-w-0"
+            >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6 p-4 sm:p-6 border border-destructive/20 rounded-xl bg-destructive/2 min-w-0">
                 <div className="space-y-1.5 min-w-0">
                   <h2 className="text-base sm:text-lg font-semibold text-destructive flex flex-wrap items-center gap-2">
@@ -765,7 +771,10 @@ export default function AccountPage() {
 
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="destructive" className="w-full md:w-auto px-6 sm:px-8 shadow-sm shrink-0">
+                    <Button
+                      variant="destructive"
+                      className="w-full md:w-auto px-6 sm:px-8 shadow-sm shrink-0"
+                    >
                       Delete Account
                     </Button>
                   </AlertDialogTrigger>
