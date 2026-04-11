@@ -16,6 +16,11 @@ import {
   Activity,
   AlertTriangle,
   LogOut,
+  Link2,
+  Globe,
+  Mail,
+  Link as LinkIcon,
+  Unlink,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -52,34 +57,49 @@ export default function AccountPage() {
   // Local loading state while performing the destructive deletion API call
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Manual session state management
-  interface Session {
+  interface SessionRow {
     id: string;
     token: string;
     userAgent?: string | null;
     ipAddress?: string | null;
     updatedAt: string | number | Date;
   }
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const [isSessionsPending, setIsSessionsPending] = useState(true);
 
-  const fetchSessions = async () => {
+  interface LinkedAccount {
+    id: string;
+    providerId: string;
+  }
+
+  const [sessions, setSessions] = useState<SessionRow[]>([]);
+  const [isSessionsPending, setIsSessionsPending] = useState(true);
+  const [accounts, setAccounts] = useState<LinkedAccount[]>([]);
+  const [isAccountsPending, setIsAccountsPending] = useState(true);
+
+  const fetchSessionsAndAccounts = async () => {
     setIsSessionsPending(true);
+    setIsAccountsPending(true);
     try {
-      const response = await authClient.listSessions();
-      if (response && response.data) {
-        setSessions(response.data);
+      const [sessRes, accRes] = await Promise.all([
+        authClient.listSessions(),
+        authClient.listAccounts(),
+      ]);
+      if (sessRes?.data) {
+        setSessions(sessRes.data);
+      }
+      if (accRes?.data) {
+        setAccounts(accRes.data);
       }
     } catch (error) {
-      console.error("Failed to fetch sessions:", error);
+      console.error("Failed to fetch sessions or linked accounts:", error);
     } finally {
       setIsSessionsPending(false);
+      setIsAccountsPending(false);
     }
   };
 
   useEffect(() => {
     if (sessionData) {
-      fetchSessions();
+      fetchSessionsAndAccounts();
     }
   }, [sessionData]);
 
@@ -102,6 +122,7 @@ export default function AccountPage() {
   // Specific refs bound to the actual DOM elements mapping to the scroll sections
   const profileRef = useRef<HTMLDivElement>(null);
   const securityRef = useRef<HTMLDivElement>(null);
+  const connectionsRef = useRef<HTMLDivElement>(null);
   const sessionsRef = useRef<HTMLDivElement>(null);
   const dangerRef = useRef<HTMLDivElement>(null);
 
@@ -116,6 +137,7 @@ export default function AccountPage() {
     const refs: Record<string, React.RefObject<HTMLDivElement | null>> = {
       profile: profileRef,
       security: securityRef,
+      connections: connectionsRef,
       sessions: sessionsRef,
       danger: dangerRef,
     };
@@ -228,25 +250,59 @@ export default function AccountPage() {
   };
 
   /**
-   * Revokes a specific session.
+   * Revokes a specific session (optimistic list update after success).
    */
   const handleRevokeSession = async (token: string) => {
     try {
       const { error } = await authClient.revokeSession({ token });
       if (error) {
         toast.error(error.message || "Failed to revoke session");
-      } else {
-        toast.success("Session revoked successfully.");
-        fetchSessions();
+        return;
       }
+      setSessions((prev) => prev.filter((s) => s.token !== token));
+      toast.success("Session revoked successfully.");
     } catch {
       toast.error("An unexpected error occurred.");
+    }
+  };
+
+  const handleLinkSocial = async (provider: "google") => {
+    try {
+      await authClient.linkSocial({
+        provider,
+        callbackURL: `${window.location.origin}/account`,
+      });
+    } catch {
+      toast.error(`Failed to link ${provider} account`);
+    }
+  };
+
+  const handleUnlinkAccount = async (providerId: string) => {
+    try {
+      const { error } = await authClient.unlinkAccount({ providerId });
+      if (error) {
+        toast.error(error.message || `Failed to unlink ${providerId}`);
+        return;
+      }
+      toast.success(`${providerId} disconnected`);
+      setAccounts((prev) => prev.filter((acc) => acc.providerId !== providerId));
+    } catch {
+      toast.error(`Error unlinking ${providerId}`);
     }
   };
 
   // Safely fallback user/session details
   const user = sessionData?.user;
   const currentSession = sessionData?.session;
+  const isGoogleLinked = accounts.some((acc) => acc.providerId === "google");
+
+  const isCurrentDeviceSession = (row: SessionRow) => {
+    const t = currentSession?.token;
+    if (t && row.token) {
+      return row.token === t;
+    }
+    return row.id === currentSession?.id;
+  };
 
   // Render a skeleton loading state to avoid hydration issues or flashing empty content
   if (isPending || !sessionData) {
@@ -260,7 +316,7 @@ export default function AccountPage() {
 
           <div className="flex flex-col lg:flex-row gap-10 sm:gap-16">
             <aside className="w-full lg:w-48 space-y-2">
-              {[1, 2, 3, 4].map((i) => (
+              {[1, 2, 3, 4, 5].map((i) => (
                 <Skeleton key={i} className="h-10 w-full rounded-md" />
               ))}
             </aside>
@@ -308,7 +364,7 @@ export default function AccountPage() {
         <header className="mb-10 sm:mb-16">
           <h1 className="text-2xl font-semibold">Account Settings</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Manage your profile, security, and active sessions.
+            Manage your profile, password, connected accounts, and active sessions.
           </p>
         </header>
 
@@ -326,6 +382,12 @@ export default function AccountPage() {
               onClick={() => scrollToSection("security")}
               icon={Lock}
               label="Security"
+            />
+            <NavBtn
+              active={activeNav === "connections"}
+              onClick={() => scrollToSection("connections")}
+              icon={Link2}
+              label="Connections"
             />
             <NavBtn
               active={activeNav === "sessions"}
@@ -488,6 +550,87 @@ export default function AccountPage() {
 
             <Separator />
 
+            {/* =============== CONNECTED ACCOUNTS =============== */}
+            <section ref={connectionsRef} id="connections" className="scroll-mt-24 space-y-8">
+              <div>
+                <h2 className="text-lg font-medium">Connected accounts</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Link Google to sign in faster, or use email and password as your primary sign-in.
+                </p>
+              </div>
+
+              <div className="border border-border/60 rounded-xl overflow-hidden divide-y divide-border/60">
+                {isAccountsPending ? (
+                  <div className="p-4 flex items-center gap-4">
+                    <Skeleton className="w-10 h-10 rounded-lg" />
+                    <div className="space-y-2 flex-1">
+                      <Skeleton className="h-4 w-40" />
+                      <Skeleton className="h-3 w-56" />
+                    </div>
+                    <Skeleton className="h-8 w-24" />
+                  </div>
+                ) : (
+                  <>
+                    <div className="p-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between transition-colors hover:bg-muted/10">
+                      <div className="flex items-center gap-4 min-w-0">
+                        <div className="p-2.5 rounded-lg bg-muted shrink-0">
+                          <Globe className="w-5 h-5 text-muted-foreground" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium">Google</p>
+                          <p className="text-xs text-muted-foreground">Social sign-in</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        {isGoogleLinked ? (
+                          <>
+                            <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground bg-muted px-2 py-1 rounded">
+                              Connected
+                            </span>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-8 text-xs text-destructive hover:bg-destructive/10"
+                              onClick={() => handleUnlinkAccount("google")}
+                            >
+                              <Unlink className="w-3.5 h-3.5 mr-1.5" />
+                              Disconnect
+                            </Button>
+                          </>
+                        ) : (
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            className="h-8 text-xs"
+                            onClick={() => handleLinkSocial("google")}
+                          >
+                            <LinkIcon className="w-3.5 h-3.5 mr-1.5" />
+                            Connect
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                    <div className="p-4 flex items-center justify-between bg-muted/20">
+                      <div className="flex items-center gap-4 min-w-0">
+                        <div className="p-2.5 rounded-lg bg-background border shrink-0">
+                          <Mail className="w-5 h-5 text-muted-foreground" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">Email &amp; password</p>
+                          <p className="text-xs text-muted-foreground">Primary credentials</p>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground bg-muted px-2 py-1 rounded shrink-0">
+                        Primary
+                      </span>
+                    </div>
+                  </>
+                )}
+              </div>
+            </section>
+
+            <Separator />
+
             {/* =============== SESSIONS SECTION =============== */}
             <section ref={sessionsRef} id="sessions" className="scroll-mt-24 space-y-8">
               <div>
@@ -511,38 +654,38 @@ export default function AccountPage() {
                     ))}
                   </div>
                 ) : sessions && sessions.length > 0 ? (
-                  sessions.map((session) => {
-                    const isCurrent = session.id === currentSession?.id;
-                    const isMobile = session.userAgent?.toLowerCase().includes("mobile");
+                  sessions.map((row) => {
+                    const isCurrent = isCurrentDeviceSession(row);
+                    const isMobile = row.userAgent?.includes("Mobi") ?? false;
 
                     return (
                       <div
-                        key={session.id}
+                        key={row.token || row.id}
                         className={cn(
                           "p-4 flex items-center justify-between transition-colors",
                           isCurrent ? "bg-muted/30" : "hover:bg-muted/10"
                         )}
                       >
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-4 min-w-0">
                           {isMobile ? (
-                            <Smartphone className="w-5 h-5 text-muted-foreground" />
+                            <Smartphone className="w-5 h-5 text-muted-foreground shrink-0" />
                           ) : (
-                            <Monitor className="w-5 h-5 text-muted-foreground" />
+                            <Monitor className="w-5 h-5 text-muted-foreground shrink-0" />
                           )}
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <p className="text-sm font-medium">
-                                {session.userAgent || "Unknown Device"}
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <p className="text-sm font-medium truncate">
+                                {row.userAgent || "Unknown device"}
                               </p>
                               {isCurrent && (
-                                <span className="px-1.5 py-0.5 bg-primary/10 text-primary text-[9px] font-bold rounded uppercase">
+                                <span className="px-1.5 py-0.5 bg-primary/10 text-primary text-[9px] font-bold rounded uppercase shrink-0">
                                   Current
                                 </span>
                               )}
                             </div>
-                            <p className="text-[11px] text-muted-foreground leading-none mt-1">
-                              {session.ipAddress || "Unknown IP"} •{" "}
-                              {format(new Date(session.updatedAt), "MMM d, h:mm a")}
+                            <p className="text-[11px] text-muted-foreground leading-none mt-1 truncate">
+                              {row.ipAddress || "Unknown IP"} •{" "}
+                              {format(new Date(row.updatedAt), "MMM d, h:mm a")}
                             </p>
                           </div>
                         </div>
@@ -551,10 +694,11 @@ export default function AccountPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="text-xs h-8 text-muted-foreground hover:text-destructive"
-                            onClick={() => handleRevokeSession(session.token)}
+                            className="text-xs h-8 text-muted-foreground hover:text-destructive shrink-0"
+                            onClick={() => handleRevokeSession(row.token)}
                           >
-                            Revoke
+                            <Trash2 className="w-4 h-4 sm:mr-1" />
+                            <span className="hidden sm:inline">Revoke</span>
                           </Button>
                         )}
                       </div>
