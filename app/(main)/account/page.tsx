@@ -99,7 +99,7 @@ export default function AccountPage() {
 
   useEffect(() => {
     if (sessionData) {
-      fetchSessionsAndAccounts();
+      void Promise.resolve().then(() => fetchSessionsAndAccounts());
     }
   }, [sessionData]);
 
