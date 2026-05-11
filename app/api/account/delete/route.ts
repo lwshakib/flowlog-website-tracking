@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth"; // Core better-auth backend validation client
 import { headers } from "next/headers"; // Next.js API for dynamically parsing request headers
 import { NextResponse } from "next/server"; // Next.js uniform response builder
 import prisma from "@/lib/prisma"; // Global Prisma ORM instance
-import { s3Service } from "@/services/s3.services";
+import { deleteObject } from "@/lib/s3";
 import { isPublicHttpImageUrl } from "@/lib/user-image";
 
 /**
@@ -31,7 +31,7 @@ export async function DELETE() {
     const key = existing?.image;
     if (key && !isPublicHttpImageUrl(key) && key.startsWith(`avatars/${userId}/`)) {
       try {
-        await s3Service.deleteObject(key);
+        await deleteObject(key);
       } catch (e) {
         console.error("S3 avatar delete (best effort):", e);
       }

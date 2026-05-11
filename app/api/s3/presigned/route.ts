@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
-import { s3Service } from "@/services/s3.services";
+import { getPresignedPutUrl } from "@/lib/s3";
 import { USER_AVATAR_PREFIX } from "@/lib/user-image";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"] as const;
@@ -51,7 +51,7 @@ export async function POST(request: Request) {
     const ext = EXT[contentType] ?? "bin";
     const path = `${USER_AVATAR_PREFIX}${session.user.id}/${crypto.randomUUID()}.${ext}`;
 
-    const uploadUrl = await s3Service.getPresignedPutUrl(path, contentType);
+    const uploadUrl = await getPresignedPutUrl(path, contentType);
 
     return NextResponse.json({
       uploadUrl,

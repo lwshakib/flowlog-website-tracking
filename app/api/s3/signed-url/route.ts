@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
-import { s3Service } from "@/services/s3.services";
+import { getPresignedGetUrl } from "@/lib/s3";
 import { USER_AVATAR_PREFIX } from "@/lib/user-image";
 
 function isSafeKey(key: string): boolean {
@@ -36,7 +36,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const url = await s3Service.getPresignedGetUrl(path);
+    const url = await getPresignedGetUrl(path);
 
     return NextResponse.json({ url });
   } catch (e) {

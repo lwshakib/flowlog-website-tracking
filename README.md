@@ -54,7 +54,7 @@ graph TD
 - **Authentication**: [Better-Auth](https://better-auth.com/)
 - **Analytics Logic**: [UA-Parser-js](https://github.com/fent/ua-parser-js), [Recharts](https://recharts.org/)
 - **Animations**: [Framer Motion](https://www.framer.com/motion/)
-- **Package Manager**: [Bun](https://bun.sh/)
+- **Package Manager**: [pnpm](https://pnpm.io/)
 
 ## Getting Started
 
@@ -64,7 +64,7 @@ Follow these steps to get a local development environment up and running.
 
 Before you begin, ensure you have the following installed:
 
-- [**Bun**](https://bun.sh) (v1.1+ recommended)
+- [**pnpm**](https://pnpm.io/) (v9+ recommended)
 - [**PostgreSQL**](https://www.postgresql.org/) (Local instance or provider like Neon)
 - [**Node.js**](https://nodejs.org/) (LTS version)
 
@@ -79,8 +79,8 @@ git clone https://github.com/lwshakib/flowlog-website-tracking.git
 # Navigate to the project directory
 cd flowlog-website-tracking
 
-# Install dependencies using Bun
-bun install
+# Install dependencies using pnpm
+pnpm install
 ```
 
 ### 3. Environment Configuration
@@ -103,7 +103,7 @@ Open `.env` and configure the following key areas:
 Initialize your database schema and run migrations:
 
 ```bash
-bun db:migrate
+pnpm run db:migrate
 ```
 
 ### 5. Storage Setup
@@ -112,7 +112,7 @@ Automatically create your storage bucket (on R2/S3) and configure CORS:
 
 ```bash
 # This script creates the bucket and sets the required CORS rules for browser uploads
-bun run bucket:setup
+pnpm run bucket:setup
 ```
 
 ### 6. Development
@@ -120,7 +120,7 @@ bun run bucket:setup
 Start the development server with Hot Module Replacement (HMR):
 
 ```bash
-bun dev
+pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser to see the dashboard.
@@ -131,10 +131,10 @@ To build the application for production:
 
 ```bash
 # Generate the optimized production build
-bun run build
+pnpm run build
 
 # Start the production server
-bun start
+pnpm start
 ```
 
 ## How to Update
@@ -146,10 +146,10 @@ To keep your local instance up to date with the latest changes:
 git pull origin main
 
 # 2. Install any new dependencies
-bun install
+pnpm install
 
 # 3. Run any new database migrations
-bun db:migrate
+pnpm run db:migrate
 ```
 
 ## Contributing

@@ -31,10 +31,10 @@ git remote add upstream https://github.com/lwshakib/flowlog-website-tracking.git
 
 ### 4. Install Dependencies
 
-Ensure you have [Bun](https://bun.sh) installed, then run:
+Ensure you have [pnpm](https://pnpm.io/) installed, then run:
 
 ```bash
-bun install
+pnpm install
 ```
 
 ### 5. Configure Environment
@@ -57,9 +57,9 @@ git checkout -b feature/your-awesome-feature
 
 As you develop, please ensure your code follows our quality standards:
 
-- **Format your code**: `bun run format`
-- **Lint your code**: `bun run lint`
-- **Test your changes**: Ensure the app builds with `bun run build`
+- **Format your code**: `pnpm run format`
+- **Lint your code**: `pnpm run lint`
+- **Test your changes**: Ensure the app builds with `pnpm run build`
 
 ### 8. Push to Your Fork
 

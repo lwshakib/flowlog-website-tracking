@@ -15,7 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Sparkles, ArrowRight, Check, Star, Zap, Shield } from "lucide-react";
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 const plans = [
   {
