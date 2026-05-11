@@ -4,8 +4,10 @@ Understand Every Click. Optimize Every Flow.
 
 Flowlog is a modern, real-time website tracking and analytics platform built for developers and product teams. It provides deep insights into user behavior with minimal performance overhead.
 
-![Flowlog Dashboard Dark](public/images/marketing/dark.png)
-![Flowlog Dashboard Light](public/images/marketing/light.png)
+<p align="center">
+  <img src="public/images/marketing/dark.png" alt="Flowlog Dashboard Dark" width="49%" />
+  <img src="public/images/marketing/light.png" alt="Flowlog Dashboard Light" width="49%" />
+</p>
 
 ## Features
 
