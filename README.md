@@ -53,7 +53,7 @@ graph TD
 - **Database**: [Prisma](https://www.prisma.io/) with [PostgreSQL](https://www.postgresql.org/)
 - **Authentication**: [Better-Auth](https://better-auth.com/)
 - **Analytics Logic**: [UA-Parser-js](https://github.com/fent/ua-parser-js), [Recharts](https://recharts.org/)
-- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **Animations**: [Motion](https://motion.dev/)
 - **Package Manager**: [pnpm](https://pnpm.io/)
 
 ## Getting Started

@@ -21,7 +21,11 @@ export function getStorageProvider(): ReturnType<typeof resolveStorageProvider> 
   return resolveStorageProvider();
 }
 
-export async function getPresignedPutUrl(key: string, contentType: string, expiresIn = 600): Promise<string> {
+export async function getPresignedPutUrl(
+  key: string,
+  contentType: string,
+  expiresIn = 600
+): Promise<string> {
   const command = new PutObjectCommand({
     Bucket: getBucket(),
     Key: key,

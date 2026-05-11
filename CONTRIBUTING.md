@@ -59,6 +59,7 @@ As you develop, please ensure your code follows our quality standards:
 
 - **Format your code**: `pnpm run format`
 - **Lint your code**: `pnpm run lint`
+- **Typecheck your code**: `pnpm run typecheck`
 - **Test your changes**: Ensure the app builds with `pnpm run build`
 
 ### 8. Push to Your Fork

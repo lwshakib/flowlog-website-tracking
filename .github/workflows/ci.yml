@@ -2,44 +2,44 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-    
-    - name: Install pnpm
-      uses: pnpm/action-setup@v3
-      with:
-        version: 9
-        
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20.x'
-        cache: 'pnpm'
-        
-    - name: Install dependencies
-      run: pnpm install
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Check Formatting
-      run: pnpm run format:check
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
 
-    - name: Lint
-      run: pnpm run lint
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "pnpm"
 
-    - name: Type Check
-      run: pnpm run typecheck
+      - name: Install dependencies
+        run: pnpm install
 
-    - name: Build
-      run: pnpm run build
-      env:
-        # Provide dummy environment variables required for build if necessary
-        DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
-        NEXT_PUBLIC_BASE_URL: "http://localhost:3000"
+      - name: Check Formatting
+        run: pnpm run format:check
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Type Check
+        run: pnpm run typecheck
+
+      - name: Build
+        run: pnpm run build
+        env:
+          # Provide dummy environment variables required for build if necessary
+          DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
+          NEXT_PUBLIC_BASE_URL: "http://localhost:3000"
