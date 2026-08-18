@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { UAParser } from "ua-parser-js";
+import { getClientIp, getGeolocation } from "@/lib/ip";
 
 /**
  * POST Handler
@@ -40,38 +41,12 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: true, message: "Localhost tracking disabled" });
       }
 
-      // Extract client information from headers
+      // Extract client information securely
       const userAgent = req.headers.get("user-agent") || "";
-      const ip =
-        req.headers.get("x-forwarded-for")?.split(",")[0] || req.headers.get("x-real-ip") || "";
+      const ip = getClientIp(req);
 
-      // Initialize location data with defaults
-      let city = req.headers.get("x-vercel-ip-city") || "Unknown";
-      let country = req.headers.get("x-vercel-ip-country") || "Unknown";
-      let region = "Unknown";
-      let countryCode = "Unknown";
-
-      // Geolocation primary source using ip-api.com (if not on a private/local IP)
-      if (
-        ip &&
-        ip !== "::1" &&
-        ip !== "127.0.0.1" &&
-        !ip.startsWith("192.168.") &&
-        !ip.startsWith("10.")
-      ) {
-        try {
-          const geoRes = await fetch(`https://ip-api.com/json/${ip}`);
-          const geoData = await geoRes.json();
-          if (geoData.status === "success") {
-            city = geoData.city;
-            region = geoData.regionName;
-            country = geoData.country;
-            countryCode = geoData.countryCode;
-          }
-        } catch (e) {
-          console.error("Geo lookup failed:", e);
-        }
-      }
+      // Resolve geolocation securely
+      const { city, region, country, countryCode } = await getGeolocation(req, ip);
 
       // Parse User-Agent for detailed device and OS information
       const parser = new UAParser(userAgent);
