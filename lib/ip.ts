@@ -201,8 +201,7 @@ export function getClientIp(req: NextRequest): string {
   // Only trust if deployed in the verified provider environment or if TRUST_PROXY is enabled
   const isVercel = process.env.VERCEL === "1" || !!process.env.NEXT_PUBLIC_VERCEL_ENV;
   const isCloudflare =
-    process.env.CF_PAGES === "1" ||
-    (trustProxy && req.headers.get("cf-connecting-ip") !== null);
+    process.env.CF_PAGES === "1" || (trustProxy && req.headers.get("cf-connecting-ip") !== null);
 
   // Cloudflare: CF-Connecting-IP
   if (isCloudflare) {
@@ -305,8 +304,7 @@ export async function getGeolocation(req: NextRequest, ip: string): Promise<Geol
   // 2. Check Cloudflare edge geolocation headers ONLY when running on Cloudflare or behind trusted Cloudflare proxy
   const trustProxy = process.env.TRUST_PROXY === "true" || process.env.TRUST_PROXY === "1";
   const isCloudflare =
-    process.env.CF_PAGES === "1" ||
-    (trustProxy && req.headers.get("cf-connecting-ip") !== null);
+    process.env.CF_PAGES === "1" || (trustProxy && req.headers.get("cf-connecting-ip") !== null);
 
   if (isCloudflare) {
     const cfCountry = req.headers.get("cf-ipcountry");
