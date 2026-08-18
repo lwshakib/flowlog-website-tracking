@@ -198,25 +198,37 @@ export function getClientIp(req: NextRequest): string {
   }
 
   // 2. Platform-specific trusted proxy headers (injected by host infrastructure)
-  // Cloudflare: CF-Connecting-IP cannot be spoofed when proxied through Cloudflare
-  const cfIp = req.headers.get("cf-connecting-ip");
-  if (cfIp && isValidIP(cfIp)) {
-    return cleanIPString(cfIp);
-  }
+  // Only trust if deployed in the verified provider environment or if TRUST_PROXY is enabled
+  const isVercel = process.env.VERCEL === "1" || !!process.env.NEXT_PUBLIC_VERCEL_ENV;
+  const isCloudflare =
+    process.env.CF_PAGES === "1" ||
+    (trustProxy && req.headers.get("cf-connecting-ip") !== null);
 
-  // Vercel edge IP header
-  const vercelForwardedFor = req.headers.get("x-vercel-forwarded-for");
-  if (vercelForwardedFor) {
-    const firstVercelIp = vercelForwardedFor.split(",")[0]?.trim();
-    if (firstVercelIp && isValidIP(firstVercelIp)) {
-      return cleanIPString(firstVercelIp);
+  // Cloudflare: CF-Connecting-IP
+  if (isCloudflare) {
+    const cfIp = req.headers.get("cf-connecting-ip");
+    if (cfIp && isValidIP(cfIp)) {
+      return cleanIPString(cfIp);
     }
   }
 
-  // Fastly client IP
-  const fastlyIp = req.headers.get("fastly-client-ip");
-  if (fastlyIp && isValidIP(fastlyIp)) {
-    return cleanIPString(fastlyIp);
+  // Vercel edge IP header
+  if (isVercel) {
+    const vercelForwardedFor = req.headers.get("x-vercel-forwarded-for");
+    if (vercelForwardedFor) {
+      const firstVercelIp = vercelForwardedFor.split(",")[0]?.trim();
+      if (firstVercelIp && isValidIP(firstVercelIp)) {
+        return cleanIPString(firstVercelIp);
+      }
+    }
+  }
+
+  // Fastly client IP (only when behind trusted proxy)
+  if (trustProxy) {
+    const fastlyIp = req.headers.get("fastly-client-ip");
+    if (fastlyIp && isValidIP(fastlyIp)) {
+      return cleanIPString(fastlyIp);
+    }
   }
 
   // 3. If trust proxy is explicitly enabled, parse X-Forwarded-For or X-Real-IP
@@ -256,7 +268,8 @@ export interface GeolocationData {
 
 /**
  * Resolves geolocation data for a request.
- * Prioritizes trusted platform headers (Vercel/Cloudflare) before falling back to ip-api.com.
+ * Only trusts platform-specific headers (Vercel/Cloudflare) when running in those verified environments
+ * or when TRUST_PROXY is enabled, preventing arbitrary client spoofing in self-hosted deployments.
  * Skips external lookups for private/local/invalid IPs to prevent quota exhaustion and latency.
  *
  * @param {NextRequest} req - The incoming request.
@@ -271,34 +284,44 @@ export async function getGeolocation(req: NextRequest, ip: string): Promise<Geol
     countryCode: "Unknown",
   };
 
-  // 1. Check Vercel edge geolocation headers first (zero network overhead & secure)
-  const vercelCity = req.headers.get("x-vercel-ip-city");
-  const vercelCountry = req.headers.get("x-vercel-ip-country");
-  const vercelRegion = req.headers.get("x-vercel-ip-country-region");
+  // 1. Check Vercel edge geolocation headers ONLY when actually running in Vercel
+  const isVercel = process.env.VERCEL === "1" || !!process.env.NEXT_PUBLIC_VERCEL_ENV;
+  if (isVercel) {
+    const vercelCity = req.headers.get("x-vercel-ip-city");
+    const vercelCountry = req.headers.get("x-vercel-ip-country");
+    const vercelRegion = req.headers.get("x-vercel-ip-country-region");
 
-  if (vercelCity || vercelCountry) {
-    if (vercelCity) result.city = decodeURIComponent(vercelCity);
-    if (vercelCountry) {
-      result.country = vercelCountry;
-      result.countryCode = vercelCountry;
+    if (vercelCity || vercelCountry) {
+      if (vercelCity) result.city = decodeURIComponent(vercelCity);
+      if (vercelCountry) {
+        result.country = vercelCountry;
+        result.countryCode = vercelCountry;
+      }
+      if (vercelRegion) result.region = vercelRegion;
+      return result;
     }
-    if (vercelRegion) result.region = vercelRegion;
-    return result;
   }
 
-  // 2. Check Cloudflare edge geolocation headers
-  const cfCountry = req.headers.get("cf-ipcountry");
-  const cfCity = req.headers.get("cf-ipcity");
-  const cfRegion = req.headers.get("cf-region");
+  // 2. Check Cloudflare edge geolocation headers ONLY when running on Cloudflare or behind trusted Cloudflare proxy
+  const trustProxy = process.env.TRUST_PROXY === "true" || process.env.TRUST_PROXY === "1";
+  const isCloudflare =
+    process.env.CF_PAGES === "1" ||
+    (trustProxy && req.headers.get("cf-connecting-ip") !== null);
 
-  if (cfCountry || cfCity) {
-    if (cfCity) result.city = cfCity;
-    if (cfCountry) {
-      result.country = cfCountry;
-      result.countryCode = cfCountry;
+  if (isCloudflare) {
+    const cfCountry = req.headers.get("cf-ipcountry");
+    const cfCity = req.headers.get("cf-ipcity");
+    const cfRegion = req.headers.get("cf-region");
+
+    if (cfCountry || cfCity) {
+      if (cfCity) result.city = cfCity;
+      if (cfCountry) {
+        result.country = cfCountry;
+        result.countryCode = cfCountry;
+      }
+      if (cfRegion) result.region = cfRegion;
+      return result;
     }
-    if (cfRegion) result.region = cfRegion;
-    return result;
   }
 
   // 3. If no platform headers, and IP is a valid public IP, query ip-api.com
